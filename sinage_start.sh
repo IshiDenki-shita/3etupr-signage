@@ -2,7 +2,7 @@
 
 # --- 設定 ---
 PORT=5000
-SERVER_START_COMMAND="python test.py"
+SERVER_START_COMMAND="python app.py"
 MAX_WAIT_TIME=10
 WAIT_INTERVAL=0.5
 BROWSER_URL="http://localhost:$PORT"
