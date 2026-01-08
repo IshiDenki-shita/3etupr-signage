@@ -25,7 +25,7 @@ app = Flask(__name__)
 
 
 """
-周期的に齋藤VPSにGETリクエスト送る
+20秒に一回齋藤VPSにGETリクエスト送る
 担当：松本
 """
 @dataclass
@@ -70,6 +70,7 @@ def main():
     t.start()
     app.run(host="127.0.0.1", debug=True, port=5000)
 
+#
 """
 ChromiumにHTMLを供給する
 """
@@ -88,7 +89,14 @@ def page2():
 # 担当：松本
 @app.route("/page3")
 def page3():
-    return render_template(html_url_3)
+    with data_lock: # 代入中に値が変更されないようロック
+        cafe_data = data.cafe
+    menu_row = cafe_data["menus"]
+
+    return render_template(
+        html_url_3,
+        menu_row=menu_row
+        )
 
 
 if __name__ == "__main__":
