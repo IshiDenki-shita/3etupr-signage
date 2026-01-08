@@ -25,7 +25,7 @@ app = Flask(__name__)
 
 
 """
-20秒に一回齋藤VPSにGETリクエスト送る
+周期的に齋藤VPSにGETリクエスト送る
 担当：松本
 """
 @dataclass
@@ -89,6 +89,7 @@ def page2():
 @app.route("/page3")
 def page3():
     return render_template(html_url_3)
+
 
 if __name__ == "__main__":
     main()
