@@ -14,23 +14,9 @@
   </head>
   <body>
     <h1>1ページ目(時間割ページ)</h1>
-    <table>
-      {%today,subjects in today_timetable%}
-      <td>{{today}}</td>
-      <tr>
-        {%time in range(4)%}
-        <td>{{time+1}}</td>
-        {%endfor%}
-      </tr>
-      <tr>
-        {%subject,insubjects%}
-        <td>{{subject}}</td>
-        {%endfor%}
-      </tr>
-      {%endfor%}
-    </table>
 
     <p>時間割変更</p>
+    {%if timetable%}
     <table>
       {%for day, subjects in timetable.items()%}
       <tr>
@@ -55,6 +41,9 @@
 
       {%endfor%}
     </table>
+    {%else%}
+    <p>なし</p>
+    {%endif%}
   </body>
   <script src="{{url_for('static',filename='main.js')}}"></script>
 </html>

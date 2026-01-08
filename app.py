@@ -76,7 +76,8 @@ ChromiumにHTMLを供給する
 # 担当：小原
 @app.route("/")
 def page1():
-    return render_template(html_url_1)
+    timetable = {}#仮
+    return render_template(html_url_1,timetable = timetable)
 
 
 # 担当：中田と齋藤
