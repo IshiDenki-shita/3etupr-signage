@@ -16,9 +16,10 @@ import threading
 url_saitoVPS = "http://162.43.43.163:8080" # URLの階層構造は未定
 
 # html_url
-html_url_1 = "page1.html"
+html_url_1 = "page1.html" #時間割変更表示
 html_url_2 = "page2.html"
 html_url_3 = "page3.html" # 食堂の特別メニューを表示
+html_url_black = "black.html"
 
 # Flaskアプリケーションのインスタンスを作成
 app = Flask(__name__)
@@ -90,6 +91,10 @@ def page2():
 @app.route("/page3")
 def page3():
     return render_template(html_url_3)
+
+@app.route("/black")
+def black():
+    return render_template(html_url_black)
 
 if __name__ == "__main__":
     main()

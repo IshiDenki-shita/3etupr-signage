@@ -13,6 +13,13 @@ if ((window.location.pathname == "/page2")) {
 }
 
 if ((window.location.pathname == "/page3")) {
+  // 5秒後に black に移動
+  setTimeout(() => {
+    window.location.href = "/black";
+  }, 5000);
+}
+
+if ((window.location.pathname == "/black")) {
   // 5秒後に page1 に移動
   setTimeout(() => {
     window.location.href = "/";
