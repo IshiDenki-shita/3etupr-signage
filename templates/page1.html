@@ -18,29 +18,31 @@
     <p>時間割変更</p>
     {%if timetable%}
     <table>
-      {%for day, subjects in timetable.items()%}
+      {%for timetable in timetable%}
+
       <tr>
         <td colspan="10" style="height: 20px"></td>
       </tr>
 
       <tr>
-        <td>{{day}}</td>
+        <td>{{timetable["date"]}}</td>
       </tr>
 
       <tr>
-        {%for time in range(4)%}
-        <td>{{time+1}}</td>
+        {% for time in range(4) %}
+        <td>{{time+1}}コマ目</td>
         {%endfor%}
       </tr>
 
       <tr>
-        {%for subject in subjects%}
-        <td>{{subject}}　</td>
+        {%for time in range(4)%}
+        <td>{{timetable[time+1]}}　</td>
         {%endfor%}
       </tr>
 
       {%endfor%}
     </table>
+
     {%else%}
     <p>なし</p>
     {%endif%}

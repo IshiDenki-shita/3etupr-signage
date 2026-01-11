@@ -13,7 +13,7 @@ import threading
 色々なグローバル変数
 """
 # GETしに行く齋藤VPSのURL
-url_saitoVPS = "http://162.43.43.163:8080" # URLの階層構造は未定
+url_saitoVPS = "http://162.43.43.163:8080/api/v1/board" # URLの階層構造は未定
 
 # html_url
 html_url_1 = "page1.html" #時間割変更表示
@@ -77,7 +77,38 @@ ChromiumにHTMLを供給する
 # 担当：小原
 @app.route("/")
 def page1():
-    timetable = {}#仮
+    main_timetable = [{
+        "1": "プログラミングII(3E)",
+        "2": "解析学II(3E)",
+        "3": "電気回路I(3E)",
+        "4": "電気磁気学I(3E)",
+        "date": "1月13日(火)"
+        },
+        {
+        "1": "保健体育III(3E)",
+        "2": "応用物理I(3E)",
+        "3": "特活(3E)",
+        "4": "総合英語(3E)",
+        "date": "1月14日(水)"
+        },
+        {
+        "1": "国語III(3E)",
+        "2": "特別講義(3E)",
+        "3": "解析学II(3E)",
+        "4": "電子回路I(3E)",
+        "date": "1月16日(金)"
+        }]#仮
+      
+    timetable = []
+
+    for any_timetable in main_timetable:
+        one_timetable = {}
+        one_timetable["date"] = any_timetable["date"]
+        for time in range(4):
+            one_timetable[time+1] = any_timetable[str(time+1)]
+        
+        timetable.append(one_timetable)
+
     return render_template(html_url_1,timetable = timetable)
 
 
@@ -92,6 +123,7 @@ def page2():
 def page3():
     return render_template(html_url_3)
 
+# 黒い画面
 @app.route("/black")
 def black():
     return render_template(html_url_black)
