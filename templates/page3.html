@@ -4,42 +4,206 @@
 <!doctype html>
 <html lang="ja">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content="10" />
-    <title>食堂メニュー</title>
+    <meta charset="UTF-8" />
+    <!--文字コード指定-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- app.pyを変えない前提：データ更新のために自動リロード -->
+    <meta http-equiv="refresh" content="20" />
+
+    <title>食堂メニュー（1件表示）</title>
+
+    <!-- page3D.html のCSSを埋め込み -->
     <style>
-      body { font-family: sans-serif; margin: 24px; }
-      h1 { margin: 0 0 12px; }
-      table { border-collapse: collapse; width: 100%; }
-      th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-      th { background: #f3f3f3; }
-      .empty { color: #666; }
+      :root{
+        --bg1:#ff3b30;
+        --bg2:#ff9500;
+        --white:#ffffff;
+        --glass: rgba(255,255,255,.16);
+        --glass2: rgba(255,255,255,.22);
+        --line: rgba(255,255,255,.28);
+        --shadow: rgba(0,0,0,.22);
+
+        --scale: 1.3; /* ★文字サイズ倍率 */
+      }
+
+      *{ box-sizing:border-box; }
+      body{
+        margin:0;
+        height:100vh;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: var(--white);
+        background: radial-gradient(1200px 700px at 15% 10%, rgba(255,255,255,.35), rgba(255,255,255,0) 60%),
+                    radial-gradient(900px 600px at 85% 20%, rgba(255,255,255,.22), rgba(255,255,255,0) 62%),
+                    linear-gradient(135deg, var(--bg1), var(--bg2));
+        display:flex;
+      }
+
+      .wrap{
+        flex:1;
+        padding: 42px 52px;
+        display:flex;
+        flex-direction:column;
+        gap: 18px;
+      }
+
+      header{
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        gap:16px;
+        padding-bottom: 14px;
+      }
+
+      .title{ display:flex; flex-direction:column; gap:6px; }
+      h1{
+        margin:0;
+        font-size: calc(46px * var(--scale));
+        letter-spacing:.03em;
+        text-shadow: 0 10px 30px var(--shadow);
+      }
+      .sub{
+        font-size: calc(18px * var(--scale));
+        opacity: .92;
+        letter-spacing:.08em;
+      }
+
+      .meta{
+        text-align:right;
+        font-size: calc(18px * var(--scale));
+        line-height: 1.35;
+        white-space: nowrap;
+        opacity: .92;
+        text-shadow: 0 8px 22px var(--shadow);
+      }
+
+      .card{
+        flex:1;
+        border-radius: 28px;
+        padding: 38px 40px;
+        background: linear-gradient(180deg, var(--glass2), var(--glass));
+        border: 2px solid var(--line);
+        box-shadow: 0 26px 60px var(--shadow);
+        backdrop-filter: blur(8px);
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        gap: 18px;
+        position: relative;
+        overflow:hidden;
+      }
+
+      .card::before{
+        content:"";
+        position:absolute;
+        inset:-120px;
+        background:
+          radial-gradient(400px 240px at 30% 30%, rgba(255,255,255,.35), rgba(255,255,255,0) 70%),
+          radial-gradient(300px 200px at 75% 55%, rgba(255,255,255,.25), rgba(255,255,255,0) 72%);
+        transform: rotate(-10deg);
+        pointer-events:none;
+      }
+
+      .badge{
+        align-self:flex-start;
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(0,0,0,.18);
+        border: 1px solid rgba(255,255,255,.25);
+        font-size: calc(18px * var(--scale));
+        letter-spacing:.08em;
+        text-transform: uppercase;
+      }
+      .dot{
+        width:12px;
+        height:12px;
+        border-radius:999px;
+        background: #fff;
+        box-shadow: 0 0 0 6px rgba(255,255,255,.18);
+      }
+
+      .date{
+        font-size: calc(34px * var(--scale));
+        font-weight: 850;
+        opacity: .95;
+        letter-spacing:.02em;
+        overflow-wrap:anywhere;
+        text-shadow: 0 16px 40px var(--shadow);
+      }
+
+      .name{
+        font-size: calc(92px * var(--scale));
+        font-weight: 950;
+        line-height: 1.03;
+        letter-spacing: .01em;
+        overflow-wrap:anywhere;
+        text-shadow: 0 20px 50px var(--shadow);
+
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        line-clamp: 3; /* VSCodeの警告対策（標準版も併記） */
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+      }
+
+      .empty{
+        flex:1;
+        border-radius: 28px;
+        padding: 38px 40px;
+        background: rgba(0,0,0,.18);
+        border: 2px solid rgba(255,255,255,.28);
+        box-shadow: 0 26px 60px var(--shadow);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        font-size: calc(64px * var(--scale));
+        font-weight: 900;
+        letter-spacing:.02em;
+        text-shadow: 0 18px 44px var(--shadow);
+      }
+
+      @media (max-width: 900px){
+        .wrap{ padding: 28px 22px; }
+        h1{ font-size: calc(36px * var(--scale)); }
+        .sub, .meta, .badge{ font-size: calc(16px * var(--scale)); }
+        .date{ font-size: calc(26px * var(--scale)); }
+        .name{ font-size: calc(66px * var(--scale)); -webkit-line-clamp: 4; line-clamp: 4; }
+      }
     </style>
   </head>
 
   <body>
-    <h1>食堂メニュー</h1>
+    <div class="wrap">
+      <header>
+        <div class="title">
+          <h1>食堂メニュー</h1>
+          <div class="sub">CAFETERIA SPECIAL</div>
+        </div>
+        <div class="meta">
+          1件表示<br>
+          自動更新: 20秒
+        </div>
+      </header>
 
-    {% if menu_row and menu_row|length > 0 %}
-      <table>
-        <thead>
-          <tr>
-            <th>提供日</th>
-            <th>メニュー</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for m in menu_row %}
-            <tr>
-              <td>{{ m.date }}</td>
-              <td>{{ m.name }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p class="empty">メニューがありません。</p>
-    {% endif %}
+      {% if menu_row and menu_row|length > 0 %}
+        {% set m = menu_row[0] %}
+        <div class="card">
+          <div class="badge"><span class="dot"></span> TODAY</div>
+          <div class="date">{{ m.date }}</div>
+          <div class="name">{{ m.name }}</div>
+        </div>
+      {% else %}
+        <div class="empty">メニューがありません</div>
+      {% endif %}
+    </div>
   </body>
+
+  <!-- 既存構成に合わせて残す（main.jsがpage3に不要なら削除してOK） -->
+  <script src="{{url_for('static',filename='main.js')}}"></script>
 </html>

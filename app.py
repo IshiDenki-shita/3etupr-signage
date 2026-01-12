@@ -13,7 +13,7 @@ import threading
 色々なグローバル変数
 """
 # GETしに行く齋藤VPSのURL
-url_saitoVPS = "http://162.43.43.163:8080" # URLの階層構造は未定
+url_saitoVPS = "http://162.43.43.163:8080/api/v1/board" # URLの階層構造は未定
 
 # html_url
 html_url_1 = "page1.html"
@@ -25,7 +25,7 @@ app = Flask(__name__)
 
 
 """
-20秒に一回齋藤VPSにGETリクエスト送る
+データを格納するデータクラス 担当：松本
 担当：松本
 """
 @dataclass
@@ -49,18 +49,22 @@ def fetch_loop():
             r = requests.get(url_saitoVPS ,timeout=5)
             r.raise_for_status()
             data_dict = r.json() # JSONがdictになる
-            print("\n\nサーバーへのアクセス成功!!\n\n")
+            print("\n\nサーバーへのアクセス成功!!\n\nGETしたデータ")
             print(data_dict)
 
         except requests.RequestException as e:
             print("\n\nあかーん_リクエストでエラー発生!!!!!!!!!!\n\n")
             print(e)
             continue
+        except ValueError as e:
+            print("\n\nあかーん_GETしたJSONがおかしい!!!!!!!!!!\n\n")
+            print(e)
+            continue
 
         with data_lock:
-            data.timetable = data_dict["timetable"]
-            data.train = data_dict["train"]
-            data.cafe = data_dict["cafe"]
+            data.timetable = data_dict.get("timetable", {})
+            data.train = data_dict.get("train", {})
+            data.cafe = data_dict.get("cafe", {})
 
 """
 main関数
@@ -68,7 +72,7 @@ main関数
 def main():
     t = threading.Thread(target=fetch_loop, daemon=True) # 別スレッドでGETリクエストのループ
     t.start()
-    app.run(host="127.0.0.1", debug=True, port=5000)
+    app.run(host="127.0.0.1", debug=True, port=8080)
 
 """
 ChromiumにHTMLを供給する
@@ -88,15 +92,23 @@ def page2():
 # 担当：松本
 @app.route("/page3")
 def page3():
-    with data_lock: # 代入中に値が変更されないようロック
+    with data_lock:  # 代入中に値が変更されないようロック
         cafe_data = data.cafe
-    menu_row = cafe_data["menus"]
+    menu_row = cafe_data.get("menus", [])
 
-    return render_template(
-        html_url_3,
-        menu_row=menu_row
-        )
+    if not menu_row:
+        menu_row = [
+            {
+                "name": "最新情報はありません",
+                "price": 0,
+                "date": cafe_data.get("generated_at", "取得できませんでした"),
+            }
+        ]
 
+    # 日付順にメニューを並べ替える
+    menu_row = sorted(menu_row, key=lambda x: x.get("date", "3000-01-01"))
+
+    return render_template(html_url_3, menu_row=menu_row)
 
 if __name__ == "__main__":
     main()
