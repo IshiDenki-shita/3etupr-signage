@@ -68,7 +68,7 @@ main関数
 def main():
     t = threading.Thread(target=fetch_loop, daemon=True) # 別スレッドでGETリクエストのループ
     t.start()
-    app.run(host="127.0.0.1", debug=True, port=5000)
+    app.run(host="127.0.0.1", debug=True, port=8080)
 
 """
 ChromiumにHTMLを供給する
