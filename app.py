@@ -82,6 +82,8 @@ def page1():
 # 担当：中田と齋藤
 @app.route("/page2")
 def page2():
+    # コミットできなーーーーーーーーーーーーーい(18:22:15)
+
     # --- app.py のロジックをここに統合 ---
     from datetime import datetime, timedelta
 
