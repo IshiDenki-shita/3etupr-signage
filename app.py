@@ -82,6 +82,8 @@ def page1():
 # 担当：中田と齋藤
 @app.route("/page2")
 def page2():
+    # commit_test
+
     # --- app.py のロジックをここに統合 ---
     # 必要なモジュールをこの関数内でのみインポート（他への影響なし）
     from datetime import datetime, timedelta
