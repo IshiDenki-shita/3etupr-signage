@@ -82,7 +82,77 @@ def page1():
 # 担当：中田と齋藤
 @app.route("/page2")
 def page2():
-    return render_template(html_url_2)
+    # --- app.py のロジックをここに統合 ---
+    # 必要なモジュールをこの関数内でのみインポート（他への影響なし）
+    from datetime import datetime, timedelta
+
+    # 運用上の日付境界線
+    OPERATIONAL_START_HOUR = 4
+
+    # 内部ヘルパー関数として定義
+    def _get_upcoming_trains(timetable):
+        """現在時刻以降の直近の列車データを抽出する"""
+        if not timetable or "destination" not in timetable:
+            return {"destination": {}}
+
+        now = datetime.now()
+        
+        # --- 営業日の判定 ---
+        if now.hour < OPERATIONAL_START_HOUR:
+            operational_date = now.date() - timedelta(days=1)
+        else:
+            operational_date = now.date()
+
+        result = {"destination": {}}
+
+        for direction, trains in timetable["destination"].items():
+            candidates = []
+            
+            for train in trains:
+                t_hour = train['hour']
+                
+                # --- 列車の日付判定 ---
+                is_next_day_in_schedule = (t_hour < OPERATIONAL_START_HOUR)
+                
+                if is_next_day_in_schedule:
+                    train_date = operational_date + timedelta(days=1)
+                else:
+                    train_date = operational_date
+
+                train_dt = datetime(
+                    train_date.year, train_date.month, train_date.day,
+                    t_hour, train['minute']
+                )
+                
+                # 現在時刻との差分（秒）
+                diff_seconds = (train_dt - now).total_seconds()
+                
+                # 表示対象: 発車時刻の5秒後まで
+                if diff_seconds >= -5:
+                    frontend_is_next_day = (train_dt.date() > now.date())
+
+                    train_data = train.copy()
+                    train_data['is_next_day'] = frontend_is_next_day
+                    
+                    candidates.append({
+                        "data": train_data,
+                        "diff": diff_seconds
+                    })
+            
+            # 直近3件を取得
+            result["destination"][direction] = [item["data"] for item in candidates[:3]]
+            
+        return result
+
+    # --- 処理実行 ---
+    # データの取得（ロック使用）
+    with data_lock:
+        current_timetable = data.timetable
+    
+    # 計算実行
+    upcoming_data = _get_upcoming_trains(current_timetable)
+
+    return render_template(html_url_2, train_data=upcoming_data)
 
 
 # 担当：松本
