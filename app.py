@@ -86,7 +86,6 @@ def page2():
     # 必要なモジュールをこの関数内でのみインポート（他への影響なし）
     from datetime import datetime, timedelta
 
-    # 運用上の日付境界線
     OPERATIONAL_START_HOUR = 4
 
     # 内部ヘルパー関数として定義
@@ -153,7 +152,6 @@ def page2():
     upcoming_data = _get_upcoming_trains(current_timetable)
 
     return render_template(html_url_2, train_data=upcoming_data)
-
 
 # 担当：松本
 @app.route("/page3")
