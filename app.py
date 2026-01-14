@@ -148,7 +148,7 @@ def page2():
     # --- 処理実行 ---
     # データの取得（ロック使用）
     with data_lock:
-        current_timetable = data.timetable
+        current_timetable = data.train
     
     # 計算実行
     upcoming_data = _get_upcoming_trains(current_timetable)
