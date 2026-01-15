@@ -66,6 +66,7 @@ def fetch_loop():
             data.train = data_dict.get("train", {})
             data.cafe = data_dict.get("cafe", {})
 
+
 """
 main関数
 """
@@ -73,6 +74,7 @@ def main():
     t = threading.Thread(target=fetch_loop, daemon=True) # 別スレッドでGETリクエストのループ
     t.start()
     app.run(host="127.0.0.1", debug=True, port=8080)
+
 
 """
 ChromiumにHTMLを供給する
@@ -94,21 +96,31 @@ def page2():
 def page3():
     with data_lock:  # 代入中に値が変更されないようロック
         cafe_data = data.cafe
-    menu_row = cafe_data.get("menus", [])
 
-    if not menu_row:
-        menu_row = [
+    # 今日の日付（JST）を "YYYY-MM-DD" 形式で作る
+    from datetime import datetime, timezone, timedelta
+
+    JST = timezone(timedelta(hours=9))
+    today_str = datetime.now(JST).date().isoformat()
+
+    # メニュー一覧から、date が今日のものだけ抽出（先頭10文字だけ比較して日付フォーマットに柔軟）
+    menus = cafe_data.get("menus", [])
+    today_menus = [
+        m for m in menus if (str(m.get("date", ""))[:10].replace("/", "-") == today_str)
+    ]
+
+    # 今日の特別メニューが無ければ、メッセージを1行だけ渡す
+    if not today_menus:
+        today_menus = [
             {
-                "name": "最新情報はありません",
+                "name": "今日は特別メニューなし",
                 "price": 0,
-                "date": cafe_data.get("generated_at", "取得できませんでした"),
+                "date": today_str,
             }
         ]
 
-    # 日付順にメニューを並べ替える
-    menu_row = sorted(menu_row, key=lambda x: x.get("date", "3000-01-01"))
+    return render_template(html_url_3, menu_row=today_menus)
 
-    return render_template(html_url_3, menu_row=menu_row)
 
 if __name__ == "__main__":
     main()
