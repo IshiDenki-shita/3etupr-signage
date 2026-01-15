@@ -77,39 +77,52 @@ ChromiumにHTMLを供給する
 # 担当：小原
 @app.route("/")
 def page1():
-    main_timetable = [{
-        "1": "プログラミングII(3E)",
-        "2": "解析学II(3E)",
-        "3": "電気回路I(3E)",
-        "4": "電気磁気学I(3E)",
-        "date": "1月13日(火)"
+  main_timetable=[
+    {
+      "subjects": [
+        {
+          "period": 1,
+          "subject": "電子回路I(3E)"
         },
         {
-        "1": "保健体育III(3E)",
-        "2": "応用物理I(3E)",
-        "3": "特活(3E)",
-        "4": "総合英語(3E)",
-        "date": "1月14日(水)"
+          "period": 2,
+          "subject": "解析学II(3E)"
         },
         {
-        "1": "国語III(3E)",
-        "2": "特別講義(3E)",
-        "3": "解析学II(3E)",
-        "4": "電子回路I(3E)",
-        "date": "1月16日(金)"
-        }]#仮
+          "period": 3,
+          "subject": "国語III(3E)"
+        },
+        {
+          "period": 4,
+          "subject": "特別講義(3E)"
+        }
+      ],
+      "date": "1月16日(金)"
+    },
+    {
+      "subjects": [
+        {
+          "period": 1,
+          "subject": "英語講読I(3E)"
+        },
+        {
+          "period": 2,
+          "subject": "電気回路I(3E)"
+        },
+        {
+          "period": 3,
+          "subject": "総合数学(3E)"
+        },
+        {
+          "period": 4,
+          "subject": "国語III(3E)"
+        }
+      ],
+      "date": "1月26日(月)"
+    }
+  ]#仮
       
-    timetable = []
-
-    for any_timetable in main_timetable:
-        one_timetable = {}
-        one_timetable["date"] = any_timetable["date"]
-        for time in range(4):
-            one_timetable[time+1] = any_timetable[str(time+1)]
-        
-        timetable.append(one_timetable)
-
-    return render_template(html_url_1,timetable = timetable)
+  return render_template(html_url_1,main_timetable = main_timetable)
 
 
 # 担当：中田と齋藤
