@@ -1,27 +1,46 @@
-if ((window.location.pathname == "/")) {
-  // 5秒後に page2 に移動
-  setTimeout(() => {
-    window.location.href = "/page2";
-  }, 5000);
-}
+let h = 0;
+let m = 0;
+let day = 0;
 
-if ((window.location.pathname == "/page2")) {
-  // 5秒後に page3 に移動
-  setTimeout(() => {
-    window.location.href = "/page3";
-  }, 5000);
-}
+setInterval(() => {
+  const now = new Date();
+  h = now.getHours();
+  m = now.getMinutes();
+  day = now.getDay(); // 0〜6 が返る　日曜日:0
 
-if ((window.location.pathname == "/page3")) {
-  // 5秒後に black に移動
-  setTimeout(() => {
-    window.location.href = "/black";
-  }, 5000);
-}
-
-if ((window.location.pathname == "/black")) {
-  // 5秒後に page1 に移動
-  setTimeout(() => {
+  //時間割
+  if (window.location.pathname != "/" && h == 8 && m == 0) {
     window.location.href = "/";
-  }, 5000);
-}
+  }
+
+  //時刻表
+  if (
+    window.location.pathname != "/page2" &&
+    h == 14 &&
+    m == 30 &&
+    (day == 1 || day == 3 || day == 5)
+  ) {
+    window.location.href = "/page2";
+  }
+  if (
+    window.location.pathname != "/page2" &&
+    h == 14 &&
+    m == 30 &&
+    (day == 2 || day == 4)
+  ) {
+    window.location.href = "/page2";
+  }
+
+  //食堂
+  if (window.location.pathname != "/page3" && h == 12 && m == 0) {
+    window.location.href = "/page3";
+  }
+
+  //黒
+  if (
+    window.location.pathname != "/black" &&
+    ((h == 8 && m == 50) || (h == 13 && m == 0) || (h == 19 && m == 0))
+  ) {
+    window.location.href = "/black";
+  }
+}, 1000);
