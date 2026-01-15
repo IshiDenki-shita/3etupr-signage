@@ -1,23 +1,25 @@
-# ラズパイの中で動作するflaskサーバー。GETリクエストも行う
+# Raspberry Pi上で動作するFlaskサーバー。外部APIへのGETリクエストも実行する
 
 """
-色々なインポート
+インポート
 """
 import time
 from dataclasses import dataclass
 import requests
 from flask import Flask, render_template  # Flaskとテンプレート描画用の render_template をインポート
 import threading
+import json
+import os
 
 """
-色々なグローバル変数
+グローバル変数・設定
 """
-# GETしに行く齋藤VPSのURL
-url_saitoVPS = "http://162.43.43.163:8080/raspi/" # URLの階層構造は未定
+# データ取得先サーバーのURL
+url_server = "http://162.43.43.163:8080/raspi/" # URLの階層構造は未定
 
-# html_url
+# テンプレートファイル名
 html_url_1 = "page1.html"
-html_url_2 = "page2.html"
+html_url_2 = "page2.html" # 津幡駅の時刻表を表示
 html_url_3 = "page3.html" # 食堂の特別メニューを表示
 
 # Flaskアプリケーションのインスタンスを作成
@@ -25,71 +27,66 @@ app = Flask(__name__)
 
 
 """
-周期的に齋藤VPSにGETリクエスト送る
-担当：松本
+データ保持用クラス定義
 """
 @dataclass
-class data_GET():
+class DataStore():
     timetable: dict
     train: dict
     cafe: dict
-data = data_GET({},{},{})
-data_lock = threading.Lock() # これで値の使用中に値を変更できなくなる
+data = DataStore({},{},{})
+data_lock = threading.Lock() # スレッド間でのデータ競合を防ぐためのロック
 
 
 """
-齋藤VPSにGETし続ける関数（ゆくゆくはタイムスケジュールで）
+外部サーバーから定期的にデータを取得する関数
 """
 def fetch_loop():
-    # 真っ当なやり方思いつかんだ
     while True:
         time.sleep(20)
 
         try:
-            r = requests.get(url_saitoVPS ,timeout=5)
+            r = requests.get(url_server ,timeout=5)
             r.raise_for_status()
-            data_dict = r.json() # JSONがdictになる
-            print("\n\nサーバーへのアクセス成功!!\n\n")
+            data_dict = r.json() # JSONレスポンスを辞書型に変換
+            print("サーバーへのアクセス成功")
             print(data_dict)
 
         except requests.RequestException as e:
-            print("\n\nあかーん_リクエストでエラー発生!!!!!!!!!!\n\n")
+            print("リクエストエラー発生")
             print(e)
             continue
 
         with data_lock:
-            data.timetable = data_dict["timetable"]
-            data.train = data_dict["train"]
-            data.cafe = data_dict["cafe"]
+            # キーが存在しない場合の安全策としてgetを使用
+            data.timetable = data_dict.get("timetable", {})
+            data.train = data_dict.get("train", {})
+            data.cafe = data_dict.get("cafe", {})
 
 """
-main関数
+メイン関数
 """
 def main():
-    t = threading.Thread(target=fetch_loop, daemon=True) # 別スレッドでGETリクエストのループ
+    t = threading.Thread(target=fetch_loop, daemon=True) # データ取得ループを別スレッドで実行
     t.start()
     app.run(host="127.0.0.1", debug=True, port=8080)
 
 """
-ChromiumにHTMLを供給する
+ルーティング設定
 """
-# 担当：小原
 @app.route("/")
 def page1():
     return render_template(html_url_1)
 
 
-# 担当：中田と齋藤
 @app.route("/page2")
 def page2():
-    # コミットできなーーーーーーーーーーーーーい(18:22:15)
-
-    # --- app.py のロジックをここに統合 ---
+    # --- ロジックの統合 ---
     from datetime import datetime, timedelta
 
     OPERATIONAL_START_HOUR = 4
 
-    # 内部ヘルパー関数として定義
+    # 内部ヘルパー関数
     def _get_upcoming_trains(timetable):
         """現在時刻以降の直近の列車データを抽出する"""
         if not timetable or "destination" not in timetable:
@@ -149,12 +146,26 @@ def page2():
     with data_lock:
         current_timetable = data.train
     
+    # データが空の場合にローカルのJSONを読み込む
+    if not current_timetable:
+        try:
+            # dataフォルダ内のtimetable.jsonへのパス
+            json_path = os.path.join(app.root_path, 'data', 'timetable.json')
+            if os.path.exists(json_path):
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    current_timetable = json.load(f)
+                    print("Local timetable loaded.")
+            else:
+                print("Local timetable.json not found.")
+        except Exception as e:
+            print(f"Error loading local timetable: {e}")
+
     # 計算実行
     upcoming_data = _get_upcoming_trains(current_timetable)
 
     return render_template(html_url_2, train_data=upcoming_data)
 
-# 担当：松本
+
 @app.route("/page3")
 def page3():
     return render_template(html_url_3)
