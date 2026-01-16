@@ -9,7 +9,7 @@
     <!--CSSファイル読み込み-->
     <style>
       :root {
-        --bg1: #20b62a86;
+        --bg1: #06410a86;
         --bg2: #045210;
         --white: #ffffff;
         --glass: rgba(255, 255, 255, 0.16);
@@ -23,7 +23,7 @@
       body {
         margin: 0;
         height: 100vh;
-        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-family: "Yu Gothic";
         color: var(--white);
 
         /* ★ 左上→右下の動くグラデーション */
@@ -55,6 +55,12 @@
         text-shadow: 0 10px 30px var(--shadow);
       }
 
+      #under_h1 {
+        font-size: calc(18px * var(--scale));
+        opacity: 0.92;
+        letter-spacing: 0.08em;
+      }
+
       #table {
         text-align: center;
         margin-left: auto;
@@ -63,13 +69,16 @@
       }
 
       #subjects {
-        font-size: 200%;
+        font-size: 250%;
+        text-align: center;
       }
     </style>
   </head>
   <body>
     <div id="page">
-      <h1 id="page_name">時間割変更</h1>
+      <h1 id="page_name">時間割変更
+        <div id = "under_h1">TIMETABLE CHANGE</div>
+      </h1>
 
       {%if main_timetable%}
       <table id="table">

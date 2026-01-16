@@ -82,19 +82,19 @@ def page1():
       "subjects": [
         {
           "period": 1,
-          "subject": "電子回路I(3E)"
+          "subject": "電子回路I"
         },
         {
           "period": 2,
-          "subject": "解析学II(3E)"
+          "subject": "解析学II"
         },
         {
           "period": 3,
-          "subject": "国語III(3E)"
+          "subject": "国語III"
         },
         {
           "period": 4,
-          "subject": "特別講義(3E)"
+          "subject": "特別講義"
         }
       ],
       "date": "1月16日(金)"
@@ -103,19 +103,19 @@ def page1():
       "subjects": [
         {
           "period": 1,
-          "subject": "英語講読I(3E)"
+          "subject": "英語講読I"
         },
         {
           "period": 2,
-          "subject": "電気回路I(3E)"
+          "subject": "電気回路I"
         },
         {
           "period": 3,
-          "subject": "総合数学(3E)"
+          "subject": "総合数学"
         },
         {
           "period": 4,
-          "subject": "国語III(3E)"
+          "subject": "国語III"
         }
       ],
       "date": "1月26日(月)"

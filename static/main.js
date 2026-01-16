@@ -1,6 +1,4 @@
-let h = 0;
-let m = 0;
-let day = 0;
+let h, m, day;
 
 setInterval(() => {
   const now = new Date();
