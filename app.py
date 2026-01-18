@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import requests
 from flask import Flask, render_template  # Flaskとテンプレート描画用の render_template をインポート
 import threading
+import re
 
 """
 色々なグローバル変数
@@ -82,27 +83,6 @@ def page1():
       "subjects": [
         {
           "period": 1,
-          "subject": "電子回路I"
-        },
-        {
-          "period": 2,
-          "subject": "解析学II"
-        },
-        {
-          "period": 3,
-          "subject": "国語III"
-        },
-        {
-          "period": 4,
-          "subject": "特別講義"
-        }
-      ],
-      "date": "1月16日(金)"
-    },
-    {
-      "subjects": [
-        {
-          "period": 1,
           "subject": "英語講読I"
         },
         {
@@ -118,9 +98,33 @@ def page1():
           "subject": "国語III"
         }
       ],
-      "date": "1月26日(月)"
+      "date": "2026-01-26"
+    },
+    {
+      "subjects": [
+        {
+          "period": 1,
+          "subject": "応用物理I"
+        },
+        {
+          "period": 2,
+          "subject": "解析学II"
+        },
+        {
+          "period": 3,
+          "subject": "国語III"
+        },
+        {
+          "period": 4,
+          "subject": "電気電子工学基礎実験Ⅰ"
+        }
+      ],
+      "date": "2026-01-30"
     }
   ]#仮
+  for timetable in main_timetable:
+      numders = re.findall(r"\d+", timetable["date"])
+      timetable["date"] = f"{numders[1]}月{numders[2]}日"
       
   return render_template(html_url_1,main_timetable = main_timetable)
 
