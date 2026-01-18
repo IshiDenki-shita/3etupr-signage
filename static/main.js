@@ -1,44 +1,57 @@
-let h, m, day;
-
 setInterval(() => {
   const now = new Date();
-  h = now.getHours();
-  m = now.getMinutes();
-  day = now.getDay(); // 0〜6 が返る　日曜日:0
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const day = now.getDay(); // 0〜6 が返る　日曜日:0
 
-  //時間割
-  if (window.location.pathname != "/" && h == 8 && m == 0) {
-    window.location.href = "/";
-  }
+  if (0 < day && day < 6) {
+    //時間割
+    if (window.location.pathname != "/" && h == 8 && m < 50) {
+      window.location.href = "/";
+    }
 
-  //時刻表
-  if (
-    window.location.pathname != "/page2" &&
-    h == 14 &&
-    m == 30 &&
-    (day == 1 || day == 3 || day == 5)
-  ) {
-    window.location.href = "/page2";
-  }
-  if (
-    window.location.pathname != "/page2" &&
-    h == 14 &&
-    m == 30 &&
-    (day == 2 || day == 4)
-  ) {
-    window.location.href = "/page2";
-  }
+    //時刻表
+    if (
+      window.location.pathname != "/page2" &&
+      (day == 1 || day == 3 || day == 5) &&
+      ((h == 14 && 30 <= m) || (15 <= h && h < 19))
+    ) {
+      window.location.href = "/page2";
+    }
+    if (
+      window.location.pathname != "/page2" &&
+      (day == 2 || day == 4) &&
+      ((h == 16 && 20 <= m) || (17 <= h && h < 19))
+    ) {
+      window.location.href = "/page2";
+    }
 
-  //食堂
-  if (window.location.pathname != "/page3" && h == 12 && m == 0) {
-    window.location.href = "/page3";
-  }
+    //食堂
+    if (window.location.pathname != "/page3" && h == 12 && m < 60) {
+      window.location.href = "/page3";
+    }
 
-  //黒
-  if (
-    window.location.pathname != "/black" &&
-    ((h == 8 && m == 50) || (h == 13 && m == 0) || (h == 19 && m == 0))
-  ) {
-    window.location.href = "/black";
+    //黒
+    if (
+      window.location.pathname != "/black" &&
+      ((h == 8 && 50 <= m) || (9 <= h && h < 12) || h == 13 || 19 <= h || h < 8)
+    ) {
+      window.location.href = "/black";
+    }
+    if (
+      window.location.pathname != "/black" &&
+      (day == 1 || day == 3 || day == 5) &&
+      h == 14 &&
+      m < 30
+    ) {
+      window.location.href = "/black";
+    }
+    if (
+      window.location.pathname != "/black" &&
+      (day == 2 || day == 4) &&
+      ((14 <= h && h < 16) || (h == 16 && m < 20))
+    ) {
+      window.location.href = "/black";
+    }
   }
 }, 1000);
