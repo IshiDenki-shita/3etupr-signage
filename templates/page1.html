@@ -72,6 +72,12 @@
         font-size: 3vw;
         text-align: center;
       }
+
+      #no_timetable{
+        margin-left: 3.5vw;
+        font-size: 3vw;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -107,7 +113,7 @@
       </table>
 
       {%else%}
-      <p>本日より２週間以内の時間割変更はありません</p>
+      <p id = "no_timetable">本日より２週間以内の時間割変更はありません</p>
       {%endif%}
     </div>
   </body>
