@@ -89,7 +89,76 @@ def page1():
 # 担当：中田と齋藤
 @app.route("/page2")
 def page2():
-    return render_template(html_url_2)
+    from datetime import datetime, timedelta
+    import json
+    import os
+
+    OPERATIONAL_START_HOUR = 4
+
+    def _get_upcoming_trains(timetable):
+        """現在時刻以降の直近の列車データを抽出する"""
+        if not timetable or "destination" not in timetable:
+            return {"destination": {}}
+
+        now = datetime.now()
+        
+        if now.hour < OPERATIONAL_START_HOUR:
+            operational_date = now.date() - timedelta(days=1)
+        else:
+            operational_date = now.date()
+
+        result = {"destination": {}}
+
+        for direction, trains in timetable["destination"].items():
+            candidates = []
+            
+            for train in trains:
+                t_hour = train['hour']
+                
+                is_next_day_in_schedule = (t_hour < OPERATIONAL_START_HOUR)
+                
+                if is_next_day_in_schedule:
+                    train_date = operational_date + timedelta(days=1)
+                else:
+                    train_date = operational_date
+
+                train_dt = datetime(
+                    train_date.year, train_date.month, train_date.day,
+                    t_hour, train['minute']
+                )
+                
+                diff_seconds = (train_dt - now).total_seconds()
+                
+                if diff_seconds >= -5:
+                    frontend_is_next_day = (train_dt.date() > now.date())
+
+                    train_data = train.copy()
+                    train_data['is_next_day'] = frontend_is_next_day
+                    
+                    candidates.append({
+                        "data": train_data,
+                        "diff": diff_seconds
+                    })
+            
+            result["destination"][direction] = [item["data"] for item in candidates[:3]]
+            
+        return result
+
+
+    current_timetable = {}
+    try:
+        json_path = os.path.join(app.root_path, 'data', 'timetable.json')
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as f:
+                current_timetable = json.load(f)
+        else:
+            print("Local timetable.json not found.")
+    except Exception as e:
+        print(f"Error loading local timetable: {e}")
+
+    upcoming_data = _get_upcoming_trains(current_timetable)
+
+    return render_template(html_url_2, train_data=upcoming_data)
 
 
 # 担当：松本
