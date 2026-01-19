@@ -14,7 +14,7 @@ import re
 色々なグローバル変数
 """
 # GETしに行く齋藤VPSのURL
-url_saitoVPS = "http://162.43.43.163:8080/api/v1/board" # URLの階層構造は未定
+url_saitoVPS = "http://100.71.1.106:8080/api/v1/board" 
 
 # html_url
 html_url_1 = "page1.html" #時間割変更表示
@@ -78,50 +78,7 @@ ChromiumにHTMLを供給する
 # 担当：小原
 @app.route("/")
 def page1():
-  main_timetable=[
-    {
-      "subjects": [
-        {
-          "period": 1,
-          "subject": "英語講読I"
-        },
-        {
-          "period": 2,
-          "subject": "電気回路I"
-        },
-        {
-          "period": 3,
-          "subject": "総合数学"
-        },
-        {
-          "period": 4,
-          "subject": "国語III"
-        }
-      ],
-      "date": "2026-01-26"
-    },
-    {
-      "subjects": [
-        {
-          "period": 1,
-          "subject": "応用物理I"
-        },
-        {
-          "period": 2,
-          "subject": "解析学II"
-        },
-        {
-          "period": 3,
-          "subject": "国語III"
-        },
-        {
-          "period": 4,
-          "subject": "電気電子工学基礎実験Ⅰ"
-        }
-      ],
-      "date": "2026-01-30"
-    }
-  ]#仮
+  main_timetable  = data.timetable["main_timetable"]
   for timetable in main_timetable:
       numders = re.findall(r"\d+", timetable["date"])
       timetable["date"] = f"{numders[1]}月{numders[2]}日"
