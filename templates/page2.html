@@ -1,15 +1,581 @@
 <!DOCTYPE html>
-<!-- HTML5であることを宣言 -->
 <html lang="ja">
-  <!--日本語であることを宣言-->
-  <head>
-    <meta charset="UTF-8" />
-    <!--文字コード指定-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!--CSSファイル読み込み-->
-  </head>
-  <body>
-    <h1>2ページ目</h1>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>train</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+
+  <style>
+    /* デザイン用変数定義 
+      LED風の色調とフォント設定
+    */
+    :root {
+      --bg-color: #000000;
+      --text-orange: #FF8C00;
+      --text-green: #00FF00;
+      --text-red: #FF0000;
+      --led-dim: rgba(255, 255, 255, 0.1);
+      --font-family: 'DotGothic16', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-orange);
+      font-family: var(--font-family);
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .led-green {
+      color: var(--text-green);
+    }
+
+    .led-red {
+      color: var(--text-red);
+    }
+
+    /* ヘッダーエリア（駅名・時計） */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 35px 40px;
+      border-bottom: 6px solid var(--text-green);
+      flex: 0 0 auto;
+      background-color: #111;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 4rem;
+      letter-spacing: 0.1em;
+    }
+
+    #clock-display {
+      font-size: 6rem;
+      font-weight: bold;
+      line-height: 1;
+      letter-spacing: 0.05em;
+    }
+
+    /* メインコンテンツエリア（3カラムレイアウト） */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 4px;
+      background-color: var(--text-green);
+      padding-top: 4px;
+    }
+
+    .destination-column {
+      background-color: var(--bg-color);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .column-header {
+      font-size: 4vw;
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px dashed var(--text-orange);
+      line-height: 1.1;
+    }
+
+    .english-title {
+      display: block;
+      font-size: 2rem;
+      margin-top: 5px;
+      opacity: 0.8;
+    }
+
+    .train-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 20px;
+    }
+
+    /* 個別列車情報のスタイル */
+    .train-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 5px;
+      padding-bottom: 40px;
+      border-bottom: 2px dotted var(--led-dim);
+      transition: opacity 0.3s;
+    }
+
+    /* 次発列車（先頭）の強調表示 */
+    .train-item:first-child {
+      margin-bottom: 60px;
+      border-bottom: none;
+    }
+
+    /* 次々発以降のスタイル */
+    .train-item:not(:first-child) {
+      opacity: 0.75;
+    }
+
+    .train-item:not(:first-child) .departure-time {
+      font-size: 4rem;
+    }
+
+    .train-item:first-child .departure-time {
+      font-size: 9rem;
+      color: var(--text-orange);
+    }
+
+    .train-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .departure-time {
+      line-height: 1;
+      font-weight: bold;
+    }
+
+    .countdown-timer {
+      text-align: right;
+      font-size: 2.5rem;
+      color: var(--text-green);
+      font-weight: bold;
+    }
+
+    .train-item:first-child .countdown-timer {
+      font-size: 5rem;
+      line-height: 1.1;
+      margin-top: 10px;
+    }
+
+    /* 出発までの残り時間を視覚化するゲージ */
+    .gauge-container {
+      position: absolute;
+      bottom: 0px;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background-color: #333;
+      border-radius: 5px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .gauge-container.show {
+      display: block;
+    }
+
+    .gauge-bar {
+      height: 100%;
+      background-color: var(--text-green);
+      width: 0%;
+      transition: width 1s linear;
+    }
+
+    /* ステータス表示用スタイル（運転終了・データなし） */
+    .operation-ended {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3rem;
+      color: var(--text-orange);
+      text-align: center;
+      border-bottom: none !important;
+      margin-bottom: 0 !important;
+    }
+
+    .no-data {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3rem;
+      color: var(--text-red);
+      text-align: center;
+      border-bottom: none !important;
+      margin-bottom: 0 !important;
+    }
+
+    /* フッター免責事項 */
+    .disclaimer-footer {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      height: 30px;
+      line-height: 30px;
+      padding-right: 15px;
+      padding-left: 15px;
+      color: #888;
+      font-size: 14px;
+      text-align: right;
+      background-color: var(--bg-color);
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    /* レスポンシブ対応（画面幅1200px以下） */
+    @media (max-width: 1200px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      #clock-display {
+        font-size: 4rem;
+      }
+
+      .train-item:first-child .departure-time {
+        font-size: 6rem;
+      }
+
+      .train-item:first-child .countdown-timer {
+        font-size: 3.5rem;
+      }
+
+      .train-item:not(:first-child) .departure-time {
+        font-size: 3rem;
+      }
+
+      .column-header {
+        font-size: 3rem;
+      }
+
+      header {
+        padding: 20px 20px;
+      }
+
+      .disclaimer-footer {
+        font-size: 10px;
+      }
+
+      .operation-ended,
+      .no-data {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1 class="led-green">津幡駅 時刻表</h1>
+    <div id="clock-display" class="led-text">--:--:--</div>
+  </header>
+
+  <main>
+    <!-- 金沢方面のカラム -->
+    <section class="destination-column">
+      <div class="column-header led-green">
+        金沢 <span class="english-title">Kanazawa</span>
+      </div>
+      <ul class="train-list" id="list-kanazawa"></ul>
+    </section>
+
+    <!-- 七尾方面のカラム -->
+    <section class="destination-column">
+      <div class="column-header led-green">
+        七尾 <span class="english-title">Nanao</span>
+      </div>
+      <ul class="train-list" id="list-nanao"></ul>
+    </section>
+
+    <!-- 富山方面のカラム -->
+    <section class="destination-column">
+      <div class="column-header led-green">
+        富山 <span class="english-title">Toyama</span>
+      </div>
+      <ul class="train-list" id="list-toyama"></ul>
+    </section>
+  </main>
+
+  <div class="disclaimer-footer">
+    表示時刻は実際の運行情報を反映するものではありません。本表示内容によって生じたいかなる損害についても、開発者は一切の責任を負いません。
+  </div>
+
+  <script>
+    // ---------------------------------------------------------
+    // 初期化と定数定義
+    // ---------------------------------------------------------
+
+    // Flaskテンプレートから渡された初期データをJavaScriptオブジェクトとして保持
+    // データが存在しない場合は null が代入される
+    let trainData = {{ train_data | tojson }};
+
+    // データ取得中の重複リクエストを防ぐフラグ
+    let isFetching = false;
+
+    // ゲージ表示を行う最大残り時間（秒）
+    const GAUGE_MAX_SECONDS = 20 * 60;
+
+    // 数値を2桁の文字列に変換するヘルパー関数
+    const padZero = (num) => num.toString().padStart(2, '0');
+
+    // ---------------------------------------------------------
+    // 時計更新および定期実行処理
+    // ---------------------------------------------------------
+
+    /**
+     * 現在時刻を表示し、列車情報の更新処理を呼び出す
+     * 1秒ごとに実行される
+     */
+    function updateClock() {
+      const now = new Date();
+
+      // ヘッダーの時計表示を更新
+      const timeString = `${padZero(now.getHours())}:${padZero(now.getMinutes())}:${padZero(now.getSeconds())}`;
+      const clockEl = document.getElementById('clock-display');
+      if (clockEl.innerText !== timeString) {
+        clockEl.innerText = timeString;
+      }
+
+      // 長時間稼働時のメモリリーク対策として、毎日午前4時にページをリロードする
+      if (now.getHours() === 4 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+        location.reload();
+      }
+
+      // カウントダウンおよび列車リストの更新
+      updateCountdowns(now);
+    }
+
+    // ---------------------------------------------------------
+    // データ取得処理
+    // ---------------------------------------------------------
+
+    /**
+     * サーバーから最新の運行データを非同期で取得する
+     * 列車が発車したタイミング等で呼び出される
+     */
+    async function fetchData() {
+      if (isFetching) return;
+      isFetching = true;
+
+      try {
+        const response = await fetch('/api/data');
+        if (response.ok) {
+          const newData = await response.json();
+          // 有効なデータ構造を持っている場合のみ更新を適用
+          if (newData && newData.destination) {
+            trainData = newData;
+            updateCountdowns(new Date());
+          }
+        }
+      } catch (e) {
+        console.error("Fetch Error:", e);
+      } finally {
+        isFetching = false;
+      }
+    }
+
+    // ---------------------------------------------------------
+    // DOM要素生成ヘルパー
+    // ---------------------------------------------------------
+
+    /**
+     * 通常の列車情報表示用のリストアイテム要素を作成
+     */
+    function createTrainElement() {
+      const li = document.createElement('li');
+      li.className = 'train-item';
+      li.innerHTML = `
+                <div class="train-info-row">
+                    <span class="departure-time led-text"></span>
+                </div>
+                <div class="countdown-timer"></div>
+                <div class="gauge-container">
+                    <div class="gauge-bar"></div>
+                </div>
+            `;
+      return li;
+    }
+
+    /**
+     * 「運転終了」表示用の要素を作成
+     */
+    function createOperationEndedElement() {
+      const li = document.createElement('li');
+      li.className = 'train-item operation-ended';
+      li.innerText = "運転終了";
+      return li;
+    }
+
+    /**
+     * 「データなし」表示用の要素を作成（ファイル読み込み失敗時など）
+     */
+    function createNoDataElement() {
+      const li = document.createElement('li');
+      li.className = 'train-item no-data';
+      li.innerText = "データなし";
+      return li;
+    }
+
+    // ---------------------------------------------------------
+    // 表示更新ロジック
+    // ---------------------------------------------------------
+
+    /**
+     * 現在時刻に基づいて各方面の列車表示を更新する
+     * @param {Date} now 現在時刻オブジェクト
+     */
+    function updateCountdowns(now) {
+      let needsReload = false;
+      const nowTime = now.getTime();
+
+      // 各方面（金沢・七尾・富山）ごとに処理を実行
+      ['kanazawa', 'nanao', 'toyama'].forEach(dir => {
+        const listEl = document.getElementById(`list-${dir}`);
+
+        // パターンA: 運行データ自体が存在しない場合
+        if (!trainData || !trainData.destination) {
+          if (!listEl.querySelector('.no-data')) {
+            listEl.innerHTML = '';
+            listEl.appendChild(createNoDataElement());
+          }
+          return;
+        }
+
+        const trains = trainData.destination[dir] || [];
+
+        // パターンB: データはあるが、本日の運行予定がない（または全て終了した）場合
+        if (trains.length === 0) {
+          if (!listEl.querySelector('.operation-ended')) {
+            listEl.innerHTML = '';
+            listEl.appendChild(createOperationEndedElement());
+          }
+          return;
+        }
+
+        // パターンC: 通常運行表示
+        // 特殊ステータス（データなし・運転終了）が表示されていた場合はクリア
+        if (listEl.querySelector('.operation-ended') || listEl.querySelector('.no-data')) {
+          listEl.innerHTML = '';
+        }
+
+        // DOM要素数の同期（既存要素を再利用し、不足分を追加・過剰分を削除）
+        const children = listEl.children;
+        while (children.length < trains.length) {
+          listEl.appendChild(createTrainElement());
+        }
+        while (children.length > trains.length) {
+          listEl.removeChild(listEl.lastChild);
+        }
+
+        // 各列車の時間計算とDOM更新
+        trains.forEach((train, index) => {
+          const li = children[index];
+
+          // 発車時刻の日時オブジェクト生成
+          const trainDate = new Date();
+          trainDate.setHours(train.hour);
+          trainDate.setMinutes(train.minute);
+          trainDate.setSeconds(0);
+
+          // 日付変更線の処理（翌日の列車かどうかの判定）
+          // APIフラグまたは現在時刻との乖離（12時間以上過去なら翌日扱い）で判定
+          if (train.is_next_day) {
+            trainDate.setDate(trainDate.getDate() + 1);
+          } else {
+            if (trainDate.getTime() < nowTime - 12 * 60 * 60 * 1000) {
+              trainDate.setDate(trainDate.getDate() + 1);
+            }
+          }
+
+          const diff = trainDate - now;
+          const diffSeconds = diff / 1000;
+
+          // 表示テキストとスタイルの決定
+          let timeText = `${padZero(train.hour)}:${padZero(train.minute)}`;
+          let countdownText = "";
+          let gaugeWidth = 0;
+          let showGauge = false;
+          let statusClass = "led-green";
+
+          if (diff > 0) {
+            // 発車前：カウントダウン表示
+            const diffMin = Math.floor(diff / 60000);
+            const diffSec = Math.floor((diff % 60000) / 1000);
+            countdownText = `あと ${diffMin}分${padZero(diffSec)}秒`;
+
+            // 指定時間以内の場合、ゲージを表示
+            if (diffSeconds <= GAUGE_MAX_SECONDS) {
+              showGauge = true;
+              gaugeWidth = (diffSeconds / GAUGE_MAX_SECONDS) * 100;
+            }
+          } else {
+            // 発車後
+            if (diff > -5000) {
+              // 発車後5秒間は「発車しました」を表示
+              countdownText = "発車しました";
+              statusClass = "led-red";
+            } else {
+              // 5秒経過後、次便表示のためにデータ再取得フラグを立てて非表示にする
+              needsReload = true;
+              li.style.display = 'none';
+              return;
+            }
+          }
+
+          // 表示状態の強制リセット
+          li.style.display = '';
+
+          // DOMのテキスト更新（変更がある場合のみ書き換えて描画負荷を軽減）
+          const timeEl = li.querySelector('.departure-time');
+          if (timeEl.innerText !== timeText) timeEl.innerText = timeText;
+
+          const countEl = li.querySelector('.countdown-timer');
+          if (countEl.innerText !== countdownText) countEl.innerText = countdownText;
+
+          // クラス（文字色）の適用
+          countEl.classList.remove('led-green', 'led-red');
+          countEl.classList.add(statusClass);
+
+          // ゲージの表示制御
+          const gaugeContainer = li.querySelector('.gauge-container');
+          const gaugeBar = li.querySelector('.gauge-bar');
+
+          if (showGauge) {
+            gaugeContainer.classList.add('show');
+            gaugeBar.style.width = `${gaugeWidth}%`;
+          } else {
+            gaugeContainer.classList.remove('show');
+          }
+        });
+      });
+
+      // 列車発車完了によるデータ更新が必要な場合、データ取得を実行
+      if (needsReload) {
+        fetchData();
+      }
+    }
+
+    // ---------------------------------------------------------
+    // エントリーポイント
+    // ---------------------------------------------------------
+    window.onload = function () {
+      updateClock();
+      setInterval(updateClock, 1000);
+    };
+  </script>
   <script src="{{url_for('static',filename='main.js')}}"></script>
+</body>
+
 </html>
