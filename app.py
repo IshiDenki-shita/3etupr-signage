@@ -8,17 +8,19 @@ from dataclasses import dataclass
 import requests
 from flask import Flask, render_template  # Flaskとテンプレート描画用の render_template をインポート
 import threading
+import re
 
 """
 色々なグローバル変数
 """
 # GETしに行く齋藤VPSのURL
-url_saitoVPS = "http://100.71.1.106:8080/api/v1/board" # URLの階層構造は未定
+url_saitoVPS = "http://100.71.1.106:8080/api/v1/board" 
 
 # html_url
-html_url_1 = "page1.html"
+html_url_1 = "page1.html" #時間割変更表示
 html_url_2 = "page2.html"
 html_url_3 = "page3.html" # 食堂の特別メニューを表示
+html_url_black = "black.html"
 
 # Flaskアプリケーションのインスタンスを作成
 app = Flask(__name__)
@@ -76,14 +78,19 @@ def main():
     t.start()
     app.run(host="127.0.0.1", debug=True, port=8080)
 
-
 """
 ChromiumにHTMLを供給する
 """
 # 担当：小原
 @app.route("/")
 def page1():
-    return render_template(html_url_1)
+  if data.timetable["main_timetable"]:
+    main_timetable  = data.timetable["main_timetable"]
+    for timetable in main_timetable:
+        numders = re.findall(r"\d+", timetable["date"])
+        timetable["date"] = f"{numders[1]}月{numders[2]}日"
+      
+  return render_template(html_url_1,main_timetable = main_timetable)
 
 
 # 担当：中田と齋藤
@@ -191,6 +198,11 @@ def page3():
 
     return render_template(html_url_3, menu_row=today_menus)
 
+
+# 黒い画面
+@app.route("/black")
+def black():
+    return render_template(html_url_black)
 
 if __name__ == "__main__":
     main()
