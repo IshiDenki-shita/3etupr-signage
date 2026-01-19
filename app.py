@@ -55,13 +55,13 @@ def fetch_loop():
 
         except requests.RequestException as e:
             print("\n\nあかーん_リクエストでエラー発生!!!!!!!!!!\n\n")
-            time.sleep(600)
             print(e)
+            time.sleep(60)
             continue
         except ValueError as e:
             print("\n\nあかーん_GETしたJSONがおかしい!!!!!!!!!!\n\n")
-            time.sleep(600)
             print(e)
+            time.sleep(60)
             continue
 
         with data_lock:
@@ -78,7 +78,7 @@ main関数
 def main():
     t = threading.Thread(target=fetch_loop, daemon=True) # 別スレッドでGETリクエストのループ
     t.start()
-    app.run(host="127.0.0.1", debug=True, port=8080)
+    app.run(host="127.0.0.1", debug=False, port=8080)
 
 """
 ChromiumにHTMLを供給する
@@ -90,8 +90,6 @@ def page1():
     main_timetable  = data.timetable["main_timetable"]
     for timetable in main_timetable:
         numders = re.findall(r"\d+", timetable["date"])
-        print("DEBUG timetable['date'] =", timetable["date"])
-        print("DEBUG numders =", numders)
 
         timetable["date"] = f"{numders[1]}月{numders[2]}日"
       
