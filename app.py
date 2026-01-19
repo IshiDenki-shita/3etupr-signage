@@ -78,10 +78,11 @@ ChromiumにHTMLを供給する
 # 担当：小原
 @app.route("/")
 def page1():
-  main_timetable  = data.timetable["main_timetable"]
-  for timetable in main_timetable:
-      numders = re.findall(r"\d+", timetable["date"])
-      timetable["date"] = f"{numders[1]}月{numders[2]}日"
+  if data.timetable["main_timetable"]:
+    main_timetable  = data.timetable["main_timetable"]
+    for timetable in main_timetable:
+        numders = re.findall(r"\d+", timetable["date"])
+        timetable["date"] = f"{numders[1]}月{numders[2]}日"
       
   return render_template(html_url_1,main_timetable = main_timetable)
 
