@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- HTML5であることを宣言 -->
 <html lang="ja">
   <!--日本語であることを宣言-->
@@ -7,9 +7,109 @@
     <!--文字コード指定-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!--CSSファイル読み込み-->
+    <style>
+      :root {
+        --bg1: #06410a86;
+        --bg2: #045210;
+        --white: #ffffff;
+        --glass: rgba(255, 255, 255, 0.16);
+        --glass2: rgba(255, 255, 255, 0.22);
+        --line: rgba(255, 255, 255, 0.28);
+        --shadow: rgba(0, 0, 0, 0.22);
+
+        --scale: 1.3; /* ★文字サイズ倍率 */
+      }
+
+      body {
+        margin: 0;
+        height: 100vh;
+        font-family: "Yu Gothic";
+        color: var(--white);
+
+        /* ★ 左上→右下の動くグラデーション */
+        background: linear-gradient(135deg, var(--bg1), var(--bg2));
+        background-size: 250% 250%;
+        animation: diagonalFlow 12s ease-in-out infinite;
+
+        display: flex;
+        text-shadow: 0 10px 30px var(--shadow);
+      }
+
+      /* ★ グラデーションを左上→右下へ動かす */
+      @keyframes diagonalFlow {
+        0% {
+          background-position: 0% 0%;
+        }
+        50% {
+          background-position: 100% 100%;
+        }
+        100% {
+          background-position: 0% 0%;
+        }
+      }
+
+      h1 {
+        margin-left: 3.5vw;
+        font-size: calc(3.5vw * var(--scale));
+        letter-spacing: 0.03em;
+        text-shadow: 0 10px 30px var(--shadow);
+      }
+
+      #under_h1 {
+        font-size: calc(1.5vw * var(--scale));
+        opacity: 0.92;
+        letter-spacing: 0.08em;
+      }
+
+      #table {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        border-collapse: collapse;
+      }
+
+      #subjects {
+        font-size: 3vw;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
-    <h1>1ページ目</h1>
+    <div id="page">
+      <h1 id="page_name">
+        時間割変更
+        <div id="under_h1">TIMETABLE CHANGE</div>
+      </h1>
+
+      {%if main_timetable%}
+      <table id="table">
+        {%for timetable in main_timetable%}
+
+        <tr>
+          <td colspan="10" style="height: 20px"></td>
+        </tr>
+
+        <tr>
+          <td>　</td>
+          {% for time in range(4) %}
+          <td>{{time+1}}コマ目</td>
+          {%endfor%}
+        </tr>
+
+        <tr id="subjects">
+          <td>{{timetable["date"]}}　　</td>
+          {%for subject in timetable["subjects"]%}
+          <td>{{subject["subject"]}}　</td>
+          {%endfor%}
+        </tr>
+
+        {%endfor%}
+      </table>
+
+      {%else%}
+      <p>本日より２週間以内の時間割変更はありません</p>
+      {%endif%}
+    </div>
   </body>
   <script src="{{url_for('static',filename='main.js')}}"></script>
 </html>
