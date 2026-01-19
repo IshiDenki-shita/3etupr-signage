@@ -13,7 +13,7 @@ import threading
 色々なグローバル変数
 """
 # GETしに行く齋藤VPSのURL
-url_saitoVPS = "http://162.43.43.163:8080/raspi/" # URLの階層構造は未定
+url_saitoVPS = "http://100.71.1.106:8080/api/v1/board" # URLの階層構造は未定
 
 # html_url
 html_url_1 = "page1.html"
@@ -25,7 +25,7 @@ app = Flask(__name__)
 
 
 """
-周期的に齋藤VPSにGETリクエスト送る
+データを格納するデータクラス 担当：松本
 担当：松本
 """
 @dataclass
@@ -43,24 +43,30 @@ data_lock = threading.Lock() # これで値の使用中に値を変更できな�
 def fetch_loop():
     # 真っ当なやり方思いつかんだ
     while True:
-        time.sleep(20)
 
         try:
             r = requests.get(url_saitoVPS ,timeout=5)
             r.raise_for_status()
             data_dict = r.json() # JSONがdictになる
-            print("\n\nサーバーへのアクセス成功!!\n\n")
+            print("\n\nサーバーへのアクセス成功!!\n\nGETしたデータ")
             print(data_dict)
 
         except requests.RequestException as e:
             print("\n\nあかーん_リクエストでエラー発生!!!!!!!!!!\n\n")
             print(e)
             continue
+        except ValueError as e:
+            print("\n\nあかーん_GETしたJSONがおかしい!!!!!!!!!!\n\n")
+            print(e)
+            continue
 
         with data_lock:
-            data.timetable = data_dict["timetable"]
-            data.train = data_dict["train"]
-            data.cafe = data_dict["cafe"]
+            data.timetable = data_dict.get("timetable", {})
+            data.train = data_dict.get("train", {})
+            data.cafe = data_dict.get("cafe", {})
+
+        time.sleep(300)
+
 
 """
 main関数
@@ -68,7 +74,8 @@ main関数
 def main():
     t = threading.Thread(target=fetch_loop, daemon=True) # 別スレッドでGETリクエストのループ
     t.start()
-    app.run(host="127.0.0.1", debug=True, port=5000)
+    app.run(host="127.0.0.1", debug=True, port=8080)
+
 
 """
 ChromiumにHTMLを供給する
@@ -88,7 +95,32 @@ def page2():
 # 担当：松本
 @app.route("/page3")
 def page3():
-    return render_template(html_url_3)
+    with data_lock:  # 代入中に値が変更されないようロック
+        cafe_data = data.cafe
+
+    # 今日の日付（JST）を "YYYY-MM-DD" 形式で作る
+    from datetime import datetime, timezone, timedelta
+
+    JST = timezone(timedelta(hours=9))
+    today_str = datetime.now(JST).date().isoformat()
+
+    # メニュー一覧から、date が今日のものだけ抽出（先頭10文字だけ比較して日付フォーマットに柔軟）
+    menus = cafe_data.get("menus", [])
+    today_menus = [
+        m for m in menus if (str(m.get("date", ""))[:10].replace("/", "-") == today_str)
+    ]
+
+    # 今日の特別メニューが無ければ、メッセージを1行だけ渡す
+    if not today_menus:
+        today_menus = [
+            {
+                "name": "今日は特別メニューなし",
+                "price": 0,
+                "date": today_str,
+            }
+        ]
+
+    return render_template(html_url_3, menu_row=today_menus)
 
 
 if __name__ == "__main__":
