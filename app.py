@@ -55,10 +55,12 @@ def fetch_loop():
 
         except requests.RequestException as e:
             print("\n\nあかーん_リクエストでエラー発生!!!!!!!!!!\n\n")
+            time.sleep(600)
             print(e)
             continue
         except ValueError as e:
             print("\n\nあかーん_GETしたJSONがおかしい!!!!!!!!!!\n\n")
+            time.sleep(600)
             print(e)
             continue
 
