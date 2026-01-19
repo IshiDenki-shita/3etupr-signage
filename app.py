@@ -88,6 +88,9 @@ def page1():
     main_timetable  = data.timetable["main_timetable"]
     for timetable in main_timetable:
         numders = re.findall(r"\d+", timetable["date"])
+        print("DEBUG timetable['date'] =", timetable["date"])
+        print("DEBUG numders =", numders)
+
         timetable["date"] = f"{numders[1]}月{numders[2]}日"
       
   return render_template(html_url_1,main_timetable = main_timetable)
