@@ -13,7 +13,7 @@ import threading
 色々なグローバル変数
 """
 # GETしに行く齋藤VPSのURL
-url_saitoVPS = "http://162.43.43.163:8080/api/v1/board" # URLの階層構造は未定
+url_saitoVPS = "http://100.71.1.106:8080/api/v1/board" # URLの階層構造は未定
 
 # html_url
 html_url_1 = "page1.html"
@@ -43,7 +43,6 @@ data_lock = threading.Lock() # これで値の使用中に値を変更できな�
 def fetch_loop():
     # 真っ当なやり方思いつかんだ
     while True:
-        time.sleep(20)
 
         try:
             r = requests.get(url_saitoVPS ,timeout=5)
@@ -65,6 +64,8 @@ def fetch_loop():
             data.timetable = data_dict.get("timetable", {})
             data.train = data_dict.get("train", {})
             data.cafe = data_dict.get("cafe", {})
+
+        time.sleep(300)
 
 
 """
