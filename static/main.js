@@ -21,7 +21,7 @@ setInterval(() => {
     if (
       window.location.pathname != "/page2" &&
       (day == 2 || day == 4) &&
-      ((h == 16 && 20 <= m) || (17 <= h && h < 19))
+      ((h == 16 && 10 <= m) || (17 <= h && h < 19))
     ) {
       window.location.href = "/page2";
     }
@@ -49,7 +49,7 @@ setInterval(() => {
     if (
       window.location.pathname != "/black" &&
       (day == 2 || day == 4) &&
-      ((14 <= h && h < 16) || (h == 16 && m < 20))
+      ((14 <= h && h < 16) || (h == 16 && m < 10))
     ) {
       window.location.href = "/black";
     }
