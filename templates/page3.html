@@ -108,25 +108,25 @@
         align-self:flex-start;
         display:inline-flex;
         align-items:center;
-        gap:10px;
-        padding: 10px 14px;
+        gap:20px;
+        padding: 20px 28px;
         border-radius: 999px;
         background: rgba(0,0,0,.18);
         border: 1px solid rgba(255,255,255,.25);
-        font-size: calc(18px * var(--scale));
+        font-size: calc(18px * var(--scale) * 2);
         letter-spacing:.08em;
         text-transform: uppercase;
       }
       .dot{
-        width:12px;
-        height:12px;
+        width:24px;
+        height:24px;
         border-radius:999px;
         background: #fff;
-        box-shadow: 0 0 0 6px rgba(255,255,255,.18);
+        box-shadow: 0 0 0 12px rgba(255,255,255,.18);
       }
 
       .date{
-        font-size: calc(34px * var(--scale));
+        font-size: calc(34px * var(--scale) * 2);
         font-weight: 850;
         opacity: .95;
         letter-spacing:.02em;
@@ -135,7 +135,7 @@
       }
 
       .name{
-        font-size: calc(92px * var(--scale));
+        font-size: calc(92px * var(--scale) * 2);
         font-weight: 950;
         line-height: 1.03;
         letter-spacing: .01em;
@@ -171,9 +171,10 @@
       @media (max-width: 900px){
         .wrap{ padding: 28px 22px; }
         h1{ font-size: calc(36px * var(--scale)); }
-        .sub, .meta, .badge{ font-size: calc(16px * var(--scale)); }
-        .date{ font-size: calc(26px * var(--scale)); }
-        .name{ font-size: calc(66px * var(--scale)); -webkit-line-clamp: 4; line-clamp: 4; }
+        .sub, .meta{ font-size: calc(16px * var(--scale)); }
+        .badge{ font-size: calc(16px * var(--scale) * 2); }
+        .date{ font-size: calc(26px * var(--scale) * 2); }
+        .name{ font-size: calc(66px * var(--scale) * 2); -webkit-line-clamp: 4; line-clamp: 4; }
       }
     </style>
   </head>
