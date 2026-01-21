@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- 設定 ---
-PORT=5000
+PORT=8080
 SERVER_START_COMMAND="python app.py"
 MAX_WAIT_TIME=10
 WAIT_INTERVAL=0.5
