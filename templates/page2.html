@@ -12,6 +12,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 
+  <!-- 外部スクリプトの読み込み -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <script src="{{url_for('static',filename='main.js')}}"></script>
+
   <style>
     /* * デザイン用変数の定義
      * LED掲示板風の配色とフォントを設定
@@ -321,8 +325,6 @@
     表示時刻は実際の運行情報を反映するものではありません。本表示内容によって生じたいかなる損害についても、開発者は一切の責任を負いません。
   </div>
 
-  <!-- 外部JSファイルの読み込み -->
-  <script src="{{url_for('static',filename='main.js')}}"></script>
   <script>
     // Flaskから渡されたデータを初期化
     let trainData = {{ train_data | tojson }};
