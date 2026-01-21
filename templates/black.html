@@ -3,6 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <title>Black Screen</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <style>
       html,
       body {
@@ -11,9 +13,9 @@
         background-color: #000;
         width: 100%;
         height: 100%;
-        cursor: none;
       }
     </style>
+
   </head>
   <body></body>
   <script src="{{url_for('static',filename='main.js')}}"></script>

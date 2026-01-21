@@ -6,7 +6,8 @@
     <meta charset="UTF-8" />
     <!--文字コード指定-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!--CSSファイル読み込み-->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <style>
       :root {
         --bg1: #06410a86;
@@ -25,7 +26,6 @@
         height: 100vh;
         font-family: "Yu Gothic";
         color: var(--white);
-        cursor: none;
 
         /* ★ 左上→右下の動くグラデーション */
         background: linear-gradient(135deg, var(--bg1), var(--bg2));
