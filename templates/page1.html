@@ -6,7 +6,8 @@
     <meta charset="UTF-8" />
     <!--文字コード指定-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!--CSSファイル読み込み-->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <style>
       :root {
         --bg1: #06410a86;
@@ -72,6 +73,12 @@
         font-size: 3vw;
         text-align: center;
       }
+
+      #no_timetable {
+        margin-left: 3.5vw;
+        font-size: 3vw;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -107,7 +114,7 @@
       </table>
 
       {%else%}
-      <p>本日より２週間以内の時間割変更はありません</p>
+      <p id="no_timetable">時間割変更はありません</p>
       {%endif%}
     </div>
   </body>
