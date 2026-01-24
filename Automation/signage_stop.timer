@@ -1,0 +1,19 @@
+[Unit]
+Description=Signage STOP schedule (JST)
+
+[Timer]
+# 月・水・金
+OnCalendar=Mon,Wed,Fri *-*-* 08:50:00
+OnCalendar=Mon,Wed,Fri *-*-* 13:00:00
+OnCalendar=Mon,Wed,Fri *-*-* 19:00:00
+
+# 火・木
+OnCalendar=Tue,Thu *-*-* 08:50:00
+OnCalendar=Tue,Thu *-*-* 13:00:00
+OnCalendar=Tue,Thu *-*-* 19:00:00
+
+Persistent=true
+Unit=signage-stop.service
+
+[Install]
+WantedBy=timers.target

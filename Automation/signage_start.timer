@@ -1,0 +1,19 @@
+[Unit]
+Description=Signage START schedule (JST)
+
+[Timer]
+# 月・水・金
+OnCalendar=Mon,Wed,Fri *-*-* 08:00:00
+OnCalendar=Mon,Wed,Fri *-*-* 12:00:00
+OnCalendar=Mon,Wed,Fri *-*-* 14:30:00
+
+# 火・木
+OnCalendar=Tue,Thu *-*-* 08:00:00
+OnCalendar=Tue,Thu *-*-* 12:00:00
+OnCalendar=Tue,Thu *-*-* 16:10:00
+
+Persistent=true
+Unit=signage-start.service
+
+[Install]
+WantedBy=timers.target
