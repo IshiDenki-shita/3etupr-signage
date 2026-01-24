@@ -1,0 +1,12 @@
+[Unit]
+Description=Signage STOP (stop_kiosk.sh)
+After=network-online.target lightdm.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/etupr-admin/signage/stop_kiosk.sh
+User=root
+
+[Install]
+WantedBy=multi-user.target
