@@ -13,7 +13,7 @@ OnCalendar=Tue,Thu *-*-* 12:00:00
 OnCalendar=Tue,Thu *-*-* 16:10:00
 
 Persistent=true
-Unit=signage-start.service
+Unit=signage_start.service
 
 [Install]
 WantedBy=timers.target
