@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/home/etupr-admin/signage/start_kiosk.sh
+ExecStart=/home/etupr-admin/signage/Automation/start_kiosk.sh
 User=root
 
 [Install]
