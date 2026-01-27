@@ -1,0 +1,21 @@
+# /etc/systemd/system/signage-app.service
+
+[Unit]
+Description=3ETU Signage App (Flask)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=etupr-admin
+Group=etupr-admin
+WorkingDirectory=/home/etupr-admin/Desktop/3etupr-signage
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/etupr-admin/Desktop/3etupr-signage/.venv/bin/python /home/etupr-admin/Desktop/3etupr-signage/app.py
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGTERM
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+# /etc/systemd/system/signage-wakeup.service
+
+[Unit]
+Description=3ETU Signage Wakeup (enable devices/services for RUN state)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=/bin/bash /home/etupr-admin/Desktop/3etupr-signage/Automation/etupr-wakeup.sh
+TimeoutStartSec=30
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

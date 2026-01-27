@@ -1,0 +1,21 @@
+# /etc/systemd/system/signage-stop.service
+
+[Unit]
+Description=3ETU Signage Stop Orchestrator (browser -> app -> sleep)
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+
+# browser->app の順で停止（画面側を先に閉じる）
+ExecStart=/usr/bin/systemctl stop signage-browser.service
+ExecStart=/usr/bin/systemctl stop signage-app.service
+ExecStart=/usr/bin/systemctl start signage-sleep.service
+
+RemainAfterExit=yes
+TimeoutStartSec=90
+
+[Install]
+WantedBy=multi-user.target
