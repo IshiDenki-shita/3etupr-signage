@@ -1,0 +1,21 @@
+# /etc/systemd/system/signage-start.timer
+
+[Unit]
+Description=3ETU Signage Start schedule (JST)
+
+[Timer]
+# 起動：月水金 08:00 / 12:00 / 14:30
+OnCalendar=Mon,Wed,Fri *-*-* 08:00:00 Asia/Tokyo
+OnCalendar=Mon,Wed,Fri *-*-* 12:00:00 Asia/Tokyo
+OnCalendar=Mon,Wed,Fri *-*-* 14:30:00 Asia/Tokyo
+# 起動：火木 08:00 / 12:00 / 16:10
+OnCalendar=Tue,Thu *-*-* 08:00:00 Asia/Tokyo
+OnCalendar=Tue,Thu *-*-* 12:00:00 Asia/Tokyo
+OnCalendar=Tue,Thu *-*-* 16:10:00 Asia/Tokyo
+
+# 取りこぼし防止（電源断・再起動後に補完実行）
+Persistent=true
+Unit=signage-start.service
+
+[Install]
+WantedBy=timers.target
