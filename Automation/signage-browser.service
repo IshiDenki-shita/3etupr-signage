@@ -19,5 +19,10 @@ RestartSec=3
 TimeoutStopSec=15
 KillMode=control-group
 
+#----------------------------------------------
+KillSignal=SIGKILL
+ExecStop=/usr/bin/pkill -9 chromium
+#----------------------------------------------
+
 [Install]
 WantedBy=graphical.target
