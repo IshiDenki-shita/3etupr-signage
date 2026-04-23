@@ -3,23 +3,30 @@
 """
 色々なインポート
 """
+import os
+from dotenv import get_env
 import time
 from dataclasses import dataclass
 import requests
-from flask import Flask, render_template  # Flaskとテンプレート描画用の render_template をインポート
+from flask import (
+    Flask,
+    render_template,
+)  # Flaskとテンプレート描画用の render_template をインポート
 import threading
 import re
+
+@dataclass
 
 """
 色々なグローバル変数
 """
 # GETしに行く齋藤VPSのURL
-url_saitoVPS = "http://100.71.1.106:8080/api/v1/board" 
+url_saitoVPS = ""
 
 # html_url
-html_url_1 = "page1.html" #時間割変更表示
+html_url_1 = "page1.html"  # 時間割変更表示
 html_url_2 = "page2.html"
-html_url_3 = "page3.html" # 食堂の特別メニューを表示
+html_url_3 = "page3.html"  # 食堂の特別メニューを表示
 html_url_black = "black.html"
 
 # Flaskアプリケーションのインスタンスを作成
@@ -30,26 +37,32 @@ app = Flask(__name__)
 データを格納するデータクラス 担当：松本
 担当：松本
 """
+
+
 @dataclass
-class data_GET():
+class data_GET:
     timetable: dict
     train: dict
     cafe: dict
-data = data_GET({},{},{})
-data_lock = threading.Lock() # これで値の使用中に値を変更できなくなる
+
+
+data = data_GET({}, {}, {})
+data_lock = threading.Lock()  # これで値の使用中に値を変更できなくなる
 
 
 """
 齋藤VPSにGETし続ける関数（ゆくゆくはタイムスケジュールで）
 """
+
+
 def fetch_loop():
     # 真っ当なやり方思いつかんだ
     while True:
 
         try:
-            r = requests.get(url_saitoVPS ,timeout=5)
+            r = requests.get(url_saitoVPS, timeout=5)
             r.raise_for_status()
-            data_dict = r.json() # JSONがdictになる
+            data_dict = r.json()  # JSONがdictになる
             print("\n\nサーバーへのアクセス成功!!\n\nGETしたデータ")
             print(data_dict)
 
@@ -75,25 +88,32 @@ def fetch_loop():
 """
 main関数
 """
+
+
 def main():
-    t = threading.Thread(target=fetch_loop, daemon=True) # 別スレッドでGETリクエストのループ
+    t = threading.Thread(
+        target=fetch_loop, daemon=True
+    )  # 別スレッドでGETリクエストのループ
     t.start()
     app.run(host="127.0.0.1", debug=False, port=8080)
+
 
 """
 ChromiumにHTMLを供給する
 """
+
+
 # 担当：小原
 @app.route("/")
 def page1():
-  if "main_timetable" in data.timetable:
-    main_timetable  = data.timetable["main_timetable"]
-    for timetable in main_timetable:
-        numders = re.findall(r"\d+", timetable["date"])
-        timetable["date"] = f"{numders[1]}月{numders[2]}日"
-  else:
-    main_timetable  = {}
-  return render_template(html_url_1,main_timetable = main_timetable)
+    if "main_timetable" in data.timetable:
+        main_timetable = data.timetable["main_timetable"]
+        for timetable in main_timetable:
+            numders = re.findall(r"\d+", timetable["date"])
+            timetable["date"] = f"{numders[1]}月{numders[2]}日"
+    else:
+        main_timetable = {}
+    return render_template(html_url_1, main_timetable=main_timetable)
 
 
 # 担当：中田
@@ -111,7 +131,7 @@ def page2():
             return {"destination": {}}
 
         now = datetime.now()
-        
+
         if now.hour < OPERATIONAL_START_HOUR:
             operational_date = now.date() - timedelta(days=1)
         else:
@@ -121,45 +141,44 @@ def page2():
 
         for direction, trains in timetable["destination"].items():
             candidates = []
-            
+
             for train in trains:
-                t_hour = train['hour']
-                
-                is_next_day_in_schedule = (t_hour < OPERATIONAL_START_HOUR)
-                
+                t_hour = train["hour"]
+
+                is_next_day_in_schedule = t_hour < OPERATIONAL_START_HOUR
+
                 if is_next_day_in_schedule:
                     train_date = operational_date + timedelta(days=1)
                 else:
                     train_date = operational_date
 
                 train_dt = datetime(
-                    train_date.year, train_date.month, train_date.day,
-                    t_hour, train['minute']
+                    train_date.year,
+                    train_date.month,
+                    train_date.day,
+                    t_hour,
+                    train["minute"],
                 )
-                
+
                 diff_seconds = (train_dt - now).total_seconds()
-                
+
                 if diff_seconds >= -5:
-                    frontend_is_next_day = (train_dt.date() > now.date())
+                    frontend_is_next_day = train_dt.date() > now.date()
 
                     train_data = train.copy()
-                    train_data['is_next_day'] = frontend_is_next_day
-                    
-                    candidates.append({
-                        "data": train_data,
-                        "diff": diff_seconds
-                    })
-            
-            result["destination"][direction] = [item["data"] for item in candidates[:3]]
-            
-        return result
+                    train_data["is_next_day"] = frontend_is_next_day
 
+                    candidates.append({"data": train_data, "diff": diff_seconds})
+
+            result["destination"][direction] = [item["data"] for item in candidates[:3]]
+
+        return result
 
     current_timetable = {}
     try:
-        json_path = os.path.join(app.root_path, 'data', 'timetable.json')
+        json_path = os.path.join(app.root_path, "data", "timetable.json")
         if os.path.exists(json_path):
-            with open(json_path, 'r', encoding='utf-8') as f:
+            with open(json_path, "r", encoding="utf-8") as f:
                 current_timetable = json.load(f)
         else:
             print("Local timetable.json not found.")
@@ -206,6 +225,7 @@ def page3():
 @app.route("/black")
 def black():
     return render_template(html_url_black)
+
 
 if __name__ == "__main__":
     main()
