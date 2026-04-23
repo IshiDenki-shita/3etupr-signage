@@ -96,7 +96,7 @@ def page1():
   return render_template(html_url_1,main_timetable = main_timetable)
 
 
-# 担当：中田と齋藤
+# 担当：中田
 @app.route("/page2")
 def page2():
     from datetime import datetime, timedelta
