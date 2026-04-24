@@ -8,6 +8,10 @@ LOG_FILE="/tmp/display-controller.log"
 # Retrieve the first argument (on/off)
 ACTION=$1
 
+# Add Wayland environment variables for cron
+export WAYLAND_DISPLAY=wayland-0
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
 # Ensure wlr-randr is installed on the system
 if ! command -v wlr-randr &> /dev/null; then
     echo "$(date): ERROR - wlr-randr command not found." >> "$LOG_FILE"
