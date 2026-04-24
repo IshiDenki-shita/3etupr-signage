@@ -5,9 +5,9 @@ setInterval(() => {
   const day = now.getDay(); // 0〜6 が返る　日曜日:0
 
   if (0 < day && day < 6) {
-    //時間割
-    if (window.location.pathname != "/" && h == 8 && m < 50) {
-      window.location.href = "/";
+    //時間割　今は一時的に黒画面表示中
+    if (window.location.pathname != "/black" && h == 8 && m < 50) {
+      window.location.href = "/black";
     }
 
     //時刻表
