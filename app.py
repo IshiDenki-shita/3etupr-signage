@@ -30,8 +30,6 @@ class Config_env:
     PORT: int
     DEBUG: bool
     ROOP_FREQUENCY: int
-    ML_APP_PATH: str
-    ML_PHOTO_PATH: str
 
     @staticmethod
     def load() -> "Config_env":
@@ -43,8 +41,6 @@ class Config_env:
             PORT=int(os.getenv("PORT", 8080)),
             DEBUG=os.getenv("DEBUG") == "True",
             ROOP_FREQUENCY=int(os.getenv("ROOP_FREQUENCY", 300)),
-            ML_APP_PATH=require_str("ML_APP_PATH"),
-            ML_PHOTO_PATH=require_str("ML_PHOTO_PATH"),
         )
 
 
