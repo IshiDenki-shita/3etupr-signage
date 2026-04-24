@@ -1,0 +1,19 @@
+[Unit]
+Description=Flask Signage App
+Wants=network-online.target
+After=network-online.target
+
+
+[Service]
+User=etu
+WorkingDirectory=/home/etu/4etupr-signage
+ExecStart=/home/etu/4etupr-signage/signage_start.sh 
+Restart=on-failure
+RestartSec=5
+
+# 手動停止を可能にする（デフォルトでも可能だが明示）
+KillSignal=SIGINT
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
