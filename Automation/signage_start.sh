@@ -6,7 +6,7 @@ SERVER_START_COMMAND="python app.py"
 MAX_WAIT_TIME=10
 WAIT_INTERVAL=0.5
 BROWSER_URL="http://localhost:$PORT"
-BROWSER_COMMAND="chromium --kiosk --app="http://localhost:$PORT"" chromium-browser --password-store=basic
+BROWSER_COMMAND="chromium --kiosk --app="http://localhost:$PORT" --password-store=basic"
 # -----------
 
 echo "--- server starting ---"
