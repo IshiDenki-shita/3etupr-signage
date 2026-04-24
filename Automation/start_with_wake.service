@@ -7,7 +7,7 @@ After=network-online.target
 [Service]
 User=etu
 WorkingDirectory=/home/etu/4etupr-signage
-ExecStart=/home/etu/4etupr-signage/signage_start.sh 
+ExecStart=/home/etu/4etupr-signage/Automation/signage_start.sh 
 Restart=on-failure
 RestartSec=5
 
