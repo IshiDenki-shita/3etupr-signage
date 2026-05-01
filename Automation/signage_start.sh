@@ -8,7 +8,7 @@ SERVER_START_COMMAND="python app.py"
 MAX_WAIT_TIME=10
 WAIT_INTERVAL=0.5
 BROWSER_URL="http://localhost:$PORT"
-BROWSER_COMMAND="chromium --kiosk --window-size=$MONITOR_WIDTH,$MONITOR_HEIGHT --window-position=0,0 --app=BROWSER_URL --password-store=basic"
+BROWSER_COMMAND="chromium --kiosk --window-size=$MONITOR_WIDTH,$MONITOR_HEIGHT --window-position=0,0 --app=$BROWSER_URL --password-store=basic"
 # -----------
 
 echo "--- server starting ---"
@@ -50,7 +50,7 @@ fi
 
 # --- ブラウザ起動 ---
 echo "opening $BROWSER_URL with chromium..."
-$BROWSER_COMMAND $BROWSER_URL
+$BROWSER_COMMAND
 
 # スクリプトが終了するまで待機（ブラウザを閉じると終了）
 wait
