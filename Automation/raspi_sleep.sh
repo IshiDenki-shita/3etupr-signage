@@ -10,27 +10,27 @@ case "$ACTION" in
     on)
         echo "$(date): INFO - Executing wake-up procedures..."
 
-        # ディスプレイの有効化
-        bash "$BASE_DIR/display_controller.sh" off
-
-        # CPUガバナーをondemandに変更
-        for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
-            [ -w "$f" ] && echo ondemand > "$f" 2>/dev/null || true
-        done
-        echo "$(date): SUCCESS - CPU governor set to ondemand"
-        ;;
-        
-    off)
-        echo "$(date): INFO - Executing sleep procedures..."
-
         # ディスプレイの無効化
-        bash "$BASE_DIR/display_controller.sh" on
+        bash "$BASE_DIR/display_controller.sh" off
 
         # CPUガバナーをpowersaveに変更
         for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
             [ -w "$f" ] && echo powersave > "$f" 2>/dev/null || true
         done
         echo "$(date): SUCCESS - CPU governor set to powersave"
+        ;;
+        
+    off)
+        echo "$(date): INFO - Executing sleep procedures..."
+
+        # ディスプレイの有効化
+        bash "$BASE_DIR/display_controller.sh" on
+
+        # CPUガバナーをondemandに変更
+        for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+            [ -w "$f" ] && echo ondemand > "$f" 2>/dev/null || true
+        done
+        echo "$(date): SUCCESS - CPU governor set to ondemand"
         ;;
         
     *)
