@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # --- 設定 ---
+MONITOR_WIDTH=1920
+MONITOR_HEIGHT=1080
 PORT=8080
 SERVER_START_COMMAND="python app.py"
 MAX_WAIT_TIME=10
 WAIT_INTERVAL=0.5
 BROWSER_URL="http://localhost:$PORT"
-BROWSER_COMMAND="chromium --kiosk --app="http://localhost:$PORT" --password-store=basic"
+BROWSER_COMMAND="chromium --kiosk --window-size=$MONITOR_WIDTH,$MONITOR_HEIGHT --window-position=0,0 --app=BROWSER_URL --password-store=basic"
 # -----------
 
 echo "--- server starting ---"
