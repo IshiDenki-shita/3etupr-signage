@@ -11,7 +11,7 @@ case "$ACTION" in
         echo "$(date): INFO - Executing wake-up procedures..."
 
         # ディスプレイの有効化
-        bash "$BASE_DIR/display_controller.sh" on
+        bash "$BASE_DIR/display_controller.sh" off
 
         # CPUガバナーをondemandに変更
         for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
@@ -32,7 +32,7 @@ case "$ACTION" in
         echo "$(date): INFO - Executing sleep procedures..."
 
         # ディスプレイの無効化
-        bash "$BASE_DIR/display_controller.sh" off
+        bash "$BASE_DIR/display_controller.sh" on
 
         # CPUガバナーをpowersaveに変更
         for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
