@@ -16,6 +16,10 @@ cd "$(dirname "$0")/.." || exit 1
 
 echo "$(date): INFO - Server starting..."
 
+# cron実行用のWayland環境変数
+export WAYLAND_DISPLAY=wayland-0
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
 # サーバーをバックグラウンドで起動
 $SERVER_START_COMMAND >/dev/null 2>&1 &
 
