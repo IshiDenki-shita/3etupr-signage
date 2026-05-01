@@ -18,14 +18,6 @@ case "$ACTION" in
             [ -w "$f" ] && echo ondemand > "$f" 2>/dev/null || true
         done
         echo "$(date): SUCCESS - CPU governor set to ondemand"
-
-        # Bluetoothの有効化
-        /usr/sbin/rfkill unblock bluetooth >/dev/null 2>&1 || true
-        if /usr/bin/systemctl start bluetooth.service >/dev/null 2>&1; then
-            echo "$(date): SUCCESS - Bluetooth enabled"
-        else
-            echo "$(date): FAILED - Could not enable Bluetooth"
-        fi
         ;;
         
     off)
@@ -39,14 +31,6 @@ case "$ACTION" in
             [ -w "$f" ] && echo powersave > "$f" 2>/dev/null || true
         done
         echo "$(date): SUCCESS - CPU governor set to powersave"
-
-        # Bluetoothの無効化
-        /usr/sbin/rfkill block bluetooth >/dev/null 2>&1 || true
-        if /usr/bin/systemctl stop bluetooth.service >/dev/null 2>&1; then
-            echo "$(date): SUCCESS - Bluetooth disabled"
-        else
-            echo "$(date): FAILED - Could not disable Bluetooth"
-        fi
         ;;
         
     *)
