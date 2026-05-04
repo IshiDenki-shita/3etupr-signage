@@ -51,8 +51,8 @@ execute "apt upgrade" "apt upgrade -y"
 # wlr-randrのインストール
 execute "wlr-randr installation" "apt install -y wlr-randr"
 
-# リポジトリのクローン
-execute "repository clone" "rm -rf ${APP_DIR} && sudo -u $SUDO_USER git clone -b develop https://github.com/IshiDenki-shita/4etupr-signage.git ${APP_DIR}"
+# リポジトリの同期（既存の場合は強制同期、新規の場合はクローン）
+execute "repository sync" "if [ -d \"${APP_DIR}/.git\" ]; then cd \"${APP_DIR}\" && sudo -u $SUDO_USER git fetch origin && sudo -u $SUDO_USER git reset --hard origin/develop && sudo -u $SUDO_USER git clean -fd; else sudo -u $SUDO_USER git clone -b develop https://github.com/IshiDenki-shita/4etupr-signage.git \"${APP_DIR}\"; fi"
 
 # 仮想環境の作成
 execute "virtual environment creation" "sudo -u $SUDO_USER python3 -m venv ${APP_DIR}/.venv"
