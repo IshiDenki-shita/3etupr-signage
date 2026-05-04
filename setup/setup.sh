@@ -61,6 +61,6 @@ execute "virtual environment creation" "sudo -u $SUDO_USER python3 -m venv ${APP
 execute "requirements installation" "sudo -u $SUDO_USER bash -c 'source ${APP_DIR}/.venv/bin/activate && pip install -r ${APP_DIR}/requirements.txt'"
 
 # cron設定スクリプトの実行
-execute "cron setup" "cd ${APP_DIR}/setup && sudo -u $SUDO_USER bash ${APP_DIR}/setup/setup_cron.sh"
+execute "cron setup" "cd ${APP_DIR}/setup/tools && sudo -u $SUDO_USER bash ${APP_DIR}/setup/tools/setup_cron.sh"
 
 echo "$(date): INFO - setup completed"
