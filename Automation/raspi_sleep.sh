@@ -7,8 +7,8 @@ BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # 引数に基づく処理
 case "$ACTION" in
-    on)
-        echo "$(date): INFO - Executing wake-up procedures..."
+    sleep)
+        echo "$(date): INFO - Executing sleep procedures..."
 
         # ディスプレイの無効化
         bash "$BASE_DIR/display_controller.sh" off
@@ -20,8 +20,8 @@ case "$ACTION" in
         echo "$(date): SUCCESS - CPU governor set to powersave"
         ;;
         
-    off)
-        echo "$(date): INFO - Executing sleep procedures..."
+    wake)
+        echo "$(date): INFO - Executing wake-up procedures..."
 
         # ディスプレイの有効化
         bash "$BASE_DIR/display_controller.sh" on
@@ -35,7 +35,7 @@ case "$ACTION" in
         
     *)
         # エラー時の使用法表示
-        echo "Usage: $0 {on|off}"
+        echo "Usage: $0 {sleep|wake}"
         exit 1
         ;;
 esac
