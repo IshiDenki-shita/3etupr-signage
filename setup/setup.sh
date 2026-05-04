@@ -52,7 +52,7 @@ execute "apt upgrade" "apt upgrade -y"
 execute "wlr-randr installation" "apt install -y wlr-randr"
 
 # リポジトリのクローン
-execute "repository clone" "sudo -u $SUDO_USER git clone https://github.com/IshiDenki-shita/4etupr-signage.git ${APP_DIR}"
+execute "repository clone" "sudo -u $SUDO_USER git clone -b develop https://github.com/IshiDenki-shita/4etupr-signage.git ${APP_DIR}"
 
 # 仮想環境の作成
 execute "virtual environment creation" "sudo -u $SUDO_USER python3 -m venv ${APP_DIR}/.venv"
