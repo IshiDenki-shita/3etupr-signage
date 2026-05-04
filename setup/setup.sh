@@ -52,15 +52,15 @@ execute "apt upgrade" "apt upgrade -y"
 execute "wlr-randr installation" "apt install -y wlr-randr"
 
 # リポジトリのクローン
-execute "repository clone" "cd ${USER_DIR} && sudo -u $SUDO_USER git clone https://github.com/IshiDenki-shita/4etupr-signage.git"
+execute "repository clone" "sudo -u $SUDO_USER git clone https://github.com/IshiDenki-shita/4etupr-signage.git ${APP_DIR}"
 
 # 仮想環境の作成
-execute "virtual environment creation" "cd ${APP_DIR} && sudo -u $SUDO_USER python3 -m venv .venv"
+execute "virtual environment creation" "sudo -u $SUDO_USER python3 -m venv ${APP_DIR}/.venv"
 
 # 依存パッケージのインストール
-execute "requirements installation" "cd ${APP_DIR} && sudo -u $SUDO_USER bash -c 'source .venv/bin/activate && pip install -r requirements.txt'"
+execute "requirements installation" "sudo -u $SUDO_USER bash -c 'source ${APP_DIR}/.venv/bin/activate && pip install -r ${APP_DIR}/requirements.txt'"
 
 # cron設定スクリプトの実行
-execute "cron setup" "${APP_DIR}/setup/setup_cron.sh"
+execute "cron setup" "cd ${APP_DIR}/setup && sudo -u $SUDO_USER bash ${APP_DIR}/setup/setup_cron.sh"
 
 echo "$(date): INFO - setup completed"
