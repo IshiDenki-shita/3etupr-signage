@@ -51,6 +51,14 @@ execute "apt upgrade" "apt upgrade -y"
 # wlr-randrのインストール
 execute "wlr-randr installation" "apt install -y wlr-randr"
 
+# Chromiumの翻訳機能を無効化するポリシーの設定
+execute "create chromium policy directory" "mkdir -p /etc/chromium-browser/policies/managed"
+execute "write chromium disable_translate policy" "cat <<EOF > /etc/chromium-browser/policies/managed/disable_translate.json
+{
+  \"TranslateEnabled\": false
+}
+EOF"
+
 # 仮想環境の作成
 execute "virtual environment creation" "sudo -u $SUDO_USER python3 -m venv ${APP_DIR}/.venv"
 
