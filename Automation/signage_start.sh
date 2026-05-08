@@ -8,7 +8,7 @@ SERVER_START_COMMAND=".venv/bin/python app.py"
 MAX_WAIT_COUNT=20
 WAIT_INTERVAL=0.5
 BROWSER_URL="http://localhost:$PORT"
-BROWSER_COMMAND="chromium --kiosk --window-size=$MONITOR_WIDTH,$MONITOR_HEIGHT --window-position=0,0 --app=$BROWSER_URL --password-store=basic --disable-features=Translate"
+BROWSER_COMMAND="chromium --kiosk --window-size=$MONITOR_WIDTH,$MONITOR_HEIGHT --window-position=0,0 --app=$BROWSER_URL --password-store=basic"
 # ===============
 
 # cron実行時にapp.pyがあるディレクトリで実行されるように移動
