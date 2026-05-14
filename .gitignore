@@ -1,7 +1,5 @@
 .venv/
-
 .DS_Store
-
 palette.py
-
 .env
+app.py
