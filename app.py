@@ -71,11 +71,6 @@ data = data_GET({}, {}, {})
 data_lock = threading.Lock()  # これで値の使用中に値を変更できなくなる
 
 
-"""
-齋藤VPSにGETし続ける関数（ゆくゆくはタイムスケジュールで）
-"""
-
-
 def fetch_loop():
     # 真っ当なやり方思いつかんだ
     while True:
@@ -125,7 +120,7 @@ ChromiumにHTMLを供給する
 
 
 # 担当：小原
-@app.route("/")
+@app.route("/timetable")
 def page1():
     if "main_timetable" in data.timetable:
         main_timetable = data.timetable["main_timetable"]
@@ -138,7 +133,7 @@ def page1():
 
 
 # 担当：中田
-@app.route("/page2")
+@app.route("/train")
 def page2():
     from datetime import datetime, timedelta
     import json
@@ -212,7 +207,7 @@ def page2():
 
 
 # 担当：松本
-@app.route("/page3")
+@app.route("/cafe")
 def page3():
     with data_lock:  # 代入中に値が変更されないようロック
         cafe_data = data.cafe

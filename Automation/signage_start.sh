@@ -1,54 +1,50 @@
 #!/bin/bash
 
-# --- 設定 ---
+# ===== 設定 =====
+MONITOR_WIDTH=1920
+MONITOR_HEIGHT=1080
 PORT=8080
-SERVER_START_COMMAND="python app.py"
-MAX_WAIT_TIME=10
+SERVER_START_COMMAND=".venv/bin/python app.py"
+MAX_WAIT_COUNT=20
 WAIT_INTERVAL=0.5
-BROWSER_URL="http://localhost:$PORT"
-BROWSER_COMMAND="chromium --kiosk --app="http://localhost:$PORT" --password-store=basic"
-# -----------
+BROWSER_URL="http://localhost:$PORT/train"
+BROWSER_COMMAND="chromium --kiosk --window-size=$MONITOR_WIDTH,$MONITOR_HEIGHT --window-position=0,0 --app=$BROWSER_URL --password-store=basic"
+# ===============
 
-echo "--- server starting ---"
+# cron実行時にapp.pyがあるディレクトリで実行されるように移動
+cd "$(dirname "$0")/.." || exit 1
 
-# サーバーをバックグラウンドで起動し、PIDを取得
-$SERVER_START_COMMAND &
-SERVER_PID=$!
+echo "$(date): INFO - Server starting..."
 
-# スクリプト終了時にサーバープロセスを確実に停止する設定
-trap "kill $SERVER_PID 2>/dev/null; echo -e '\n--- server shutdown completed ---'" EXIT
+# cron実行用のWayland環境変数
+export DISPLAY=:0
 
-# --- サーバー起動完了を待機（ポーリング） ---
-ELAPSED_TIME=0
-echo "waiting for port $PORT to open..."
+# サーバーをバックグラウンドで起動
+$SERVER_START_COMMAND >/dev/null 2>&1 &
 
-while [ $ELAPSED_TIME -lt $MAX_WAIT_TIME ]; do
-    # netcat (nc) コマンドでポートが開いているかチェック
-    # -z: スキャンモード (データ送信なし)
-    # -w 1: タイムアウトを1秒に設定
+# サーバー起動完了を待機
+COUNT=0
+echo "$(date): INFO - Waiting for port $PORT to open..."
+
+while [ $COUNT -lt $MAX_WAIT_COUNT ]; do
     if nc -z -w 1 localhost $PORT; then
-        echo "server started"
+        echo "$(date): SUCCESS - Server started on port $PORT"
         break
     fi
 
-    # 待機
     sleep $WAIT_INTERVAL
-    ELAPSED_TIME=$(echo "$ELAPSED_TIME + $WAIT_INTERVAL" | bc)
-    
-    # 待機中に '.' を表示して進捗を示す
-    echo -n "."
+    COUNT=$((COUNT + 1))
 done
 
-# --- タイムアウト確認 ---
-if [ $ELAPSED_TIME -ge $MAX_WAIT_TIME ]; then
-    echo -e "\ERROR: timeout"
-    # サーバーを停止してスクリプトを終了
+# タイムアウト確認
+if [ $COUNT -ge $MAX_WAIT_COUNT ]; then
+    echo "$(date): ERROR - Server start timeout"
     exit 1
 fi
 
-# --- ブラウザ起動 ---
-echo "opening $BROWSER_URL with chromium..."
-$BROWSER_COMMAND $BROWSER_URL
+# ブラウザをバックグラウンドで起動
+echo "$(date): INFO - Opening $BROWSER_URL with Chromium..."
+$BROWSER_COMMAND >/dev/null 2>&1 &
 
-# スクリプトが終了するまで待機（ブラウザを閉じると終了）
-wait
+echo "$(date): SUCCESS - Signage startup sequence completed"
+exit 0
