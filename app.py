@@ -14,6 +14,7 @@ from flask import (
 )  # Flaskとテンプレート描画用の render_template をインポート
 import threading
 import re
+import copy
 
 
 def require_str(key: str) -> str:
@@ -123,7 +124,7 @@ ChromiumにHTMLを供給する
 @app.route("/timetable")
 def page1():
     if "main_timetable" in data.timetable:
-        main_timetable = data.timetable["main_timetable"]
+        main_timetable = copy.deepcopy(data.timetable["main_timetable"])
         for timetable in main_timetable:
             numders = re.findall(r"\d+", timetable["date"])
             timetable["date"] = f"{numders[1]}月{numders[2]}日"
